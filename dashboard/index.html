@@ -7,24 +7,24 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #09090b;
-      --panel: #111113;
-      --panel2: #161618;
-      --line: rgba(255,255,255,.075);
-      --muted: #71717a;
-      --text: #e4e4e7;
-      --cyan: #22d3ee;
-      --blue: #60a5fa;
-      --violet: #a78bfa;
-      --orange: #fb923c;
-      --amber: #fbbf24;
-      --red: #f87171;
-      --green: #22c55e;
+      --bg: #050507;
+      --panel: rgba(13,13,18,.84);
+      --panel2: #101016;
+      --line: rgba(242,234,216,.17);
+      --muted: #a59d8b;
+      --text: #f2ead8;
+      --cream: #f2ead8;
+      --purple: #3c179b;
+      --hot: #6a35e8;
+      --lime: #b8e62f;
+      --coral: #f27863;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: var(--bg);
+      background:
+        radial-gradient(circle at 76% 12%, rgba(106,53,232,.18), transparent 28%),
+        linear-gradient(180deg, #0a0a0f, var(--bg));
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0;
@@ -32,7 +32,7 @@
     button, input { font: inherit; }
     button { cursor: pointer; }
     .app { display: grid; grid-template-columns: 260px 1fr; min-block-size: 100vh; }
-    .side { border-inline-end: 1px solid var(--line); padding: 14px; background: #0b0b0d; position: sticky; top: 0; block-size: 100vh; overflow: auto; }
+    .side { border-inline-end: 1px solid var(--line); padding: 14px; background: rgba(5,5,7,.94); position: sticky; top: 0; block-size: 100vh; overflow: auto; }
     .main { min-inline-size: 0; }
     .top { border-block-end: 1px solid var(--line); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .eyebrow, .label, .mini, .chip, .count, .cell { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
@@ -40,7 +40,7 @@
     h1 { margin: 3px 0 0; font-size: 18px; line-height: 1.2; font-weight: 650; }
     .tabs { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 4px; }
     .tab { border: 0; border-radius: 3px; background: transparent; color: var(--muted); padding: 7px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: .14em; }
-    .tab.on { color: var(--cyan); background: rgba(34,211,238,.12); }
+    .tab.on { color: var(--lime); background: rgba(184,230,47,.11); }
     .section { margin-block-end: 18px; }
     .label { color: #52525b; font-size: 9px; text-transform: uppercase; letter-spacing: .16em; margin: 0 0 8px 2px; }
     .layer { width: 100%; text-align: start; border: 1px solid transparent; background: transparent; border-radius: 4px; padding: 8px; display: grid; grid-template-columns: 12px 1fr auto; gap: 9px; align-items: start; color: var(--muted); }
@@ -50,7 +50,7 @@
     .layer-note { margin-block-start: 3px; font-size: 9px; color: #52525b; }
     .toggle { width: 100%; border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: 4px; padding: 7px 8px; display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
     .toggle.on { background: rgba(255,255,255,.035); border-color: var(--line); color: var(--text); }
-    .toolbar { position: sticky; top: 0; z-index: 3; background: rgba(9,9,11,.96); border-block-end: 1px solid var(--line); padding: 12px 18px; }
+    .toolbar { position: sticky; top: 0; z-index: 3; background: rgba(5,5,7,.96); border-block-end: 1px solid var(--line); padding: 12px 18px; }
     .search { display: flex; gap: 10px; align-items: center; margin-block-end: 10px; }
     .search input { flex: 1; min-inline-size: 180px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--text); border-radius: 4px; padding: 9px 10px; font-size: 12px; outline: 0; }
     .count { color: var(--muted); font-size: 10px; white-space: nowrap; }
@@ -60,7 +60,7 @@
     .content { padding: 14px 18px 18px; }
     .grid { display: grid; gap: 10px; }
     .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .tile, .panel, .card { border: 1px solid var(--line); background: rgba(255,255,255,.022); border-radius: 4px; }
+    .tile, .panel, .card { border: 1px solid var(--line); background: rgba(5,5,7,.72); border-radius: 4px; }
     .tile { padding: 11px; min-inline-size: 0; }
     .tile .mini { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .14em; }
     .tile .num { margin-block-start: 5px; font: 700 22px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
@@ -81,7 +81,7 @@
     .summary { color: #a1a1aa; font-size: 12px; line-height: 1.48; margin-block-start: 8px; }
     table { width: 100%; border-collapse: collapse; min-inline-size: 980px; }
     th, td { border-block-end: 1px solid rgba(255,255,255,.055); padding: 8px 10px; text-align: start; }
-    th { position: sticky; top: 0; background: #101012; color: #52525b; font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .14em; }
+    th { position: sticky; top: 0; background: #101016; color: #a59d8b; font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .14em; }
     td { font-size: 12px; color: #d4d4d8; }
     .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 4px; }
     .hide { display: none; }
@@ -165,26 +165,26 @@
 
   <script>
     const layers = [
-      ["standards","Standards","Normative","#22d3ee"],
-      ["architecture","Architecture Guidance","Official architecture","#818cf8"],
-      ["docs","Official Docs","Service behavior","#a78bfa"],
-      ["samples","Samples / Reference Impls","Illustrative code","#fb923c"],
-      ["community","Community Trackers","Observed change","#fbbf24"],
-      ["seo","Search / Tutorials / AI","Copied guidance","#f87171"]
+      ["standards","Standards","Normative","#b8e62f"],
+      ["architecture","Architecture Guidance","Official architecture","#6a35e8"],
+      ["docs","Official Docs","Service behavior","#f2ead8"],
+      ["samples","Samples / Reference Impls","Illustrative code","#f27863"],
+      ["community","Community Trackers","Observed change","#d6bb45"],
+      ["seo","Search / Tutorials / AI","Copied guidance","#8f5cff"]
     ];
     const relColors = {
-      "Normative Conflict":"#ef4444",
-      "Unsafe Default":"#f97316",
-      "Console/API/IaC Divergence":"#f59e0b",
-      "Editorial Omission":"#94a3b8",
-      "Legacy Compatibility Exposure":"#eab308",
-      "Guidance Drift":"#818cf8",
-      "Sample-Code Defect":"#fb923c",
-      "Doc/Product Mismatch":"#a78bfa",
-      "Ecosystem Observation":"#71717a",
-      "Current Alignment":"#22c55e"
+      "Normative Conflict":"#f27863",
+      "Unsafe Default":"#f27863",
+      "Console/API/IaC Divergence":"#d6bb45",
+      "Editorial Omission":"#a59d8b",
+      "Legacy Compatibility Exposure":"#d6bb45",
+      "Guidance Drift":"#6a35e8",
+      "Sample-Code Defect":"#f27863",
+      "Doc/Product Mismatch":"#8f5cff",
+      "Ecosystem Observation":"#a59d8b",
+      "Current Alignment":"#b8e62f"
     };
-    const topicColors = {IAM:"#818cf8",TLS:"#22d3ee",CORS:"#fb923c",Auth:"#a78bfa",Session:"#e879f9",Headers:"#34d399",Crypto:"#fbbf24",Input:"#60a5fa",Logging:"#94a3b8",Secrets:"#ef4444",EKS:"#22c55e",Docker:"#38bdf8",React:"#f472b6",S3:"#f59e0b",VPC:"#0ea5e9",KMS:"#c084fc",RDS:"#4ade80",ECR:"#f43f5e",CICD:"#ea580c",K8s:"#3b82f6",WAF:"#d946ef"};
+    const topicColors = {IAM:"#6a35e8",TLS:"#b8e62f",CORS:"#f27863",Auth:"#8f5cff",Session:"#d6bb45",Headers:"#f2ead8",Crypto:"#d6bb45",Input:"#b8e62f",Logging:"#a59d8b",Secrets:"#f27863",EKS:"#b8e62f",Docker:"#8f5cff",React:"#f27863",S3:"#d6bb45",VPC:"#8f5cff",KMS:"#6a35e8",RDS:"#b8e62f",ECR:"#f27863",CICD:"#d6bb45",K8s:"#8f5cff",WAF:"#6a35e8"};
     const evidenceText = {
       A: "Version-pinned",
       B: "Current official docs",
@@ -260,10 +260,10 @@
       const decisions = f.filter(e => e.relation !== "Current Alignment").length;
       const topics = new Set(f.map(e => e.topic)).size;
       $("metrics").innerHTML = [
-        ["Visible Records", f.length, "of " + events.length, "#22d3ee"],
-        ["Verified", verified, "A/B evidence", "#22c55e"],
-        ["Load-bearing", decisions, "non-aligned", "#f97316"],
-        ["Topics", topics, "active filters", "#a78bfa"]
+        ["Visible Records", f.length, "of " + events.length, "#f2ead8"],
+        ["Verified", verified, "A/B evidence", "#b8e62f"],
+        ["Load-bearing", decisions, "non-aligned", "#f27863"],
+        ["Topics", topics, "active filters", "#6a35e8"]
       ].map(x => `<div class="tile"><div class="mini">${x[0]}</div><div class="num" style="color:${x[3]}">${x[1]}</div><div class="mini">${x[2]}</div></div>`).join("");
       const total = Math.max(1, f.length);
       $("layerTotal").textContent = f.length + " visible";
@@ -271,7 +271,7 @@
       bars("layerBars", countsBy(layers.map(l => l[0]), "layer"), total, k => layer(k)[3], k => layer(k)[1]);
       bars("relBars", countsBy(Object.keys(relColors), "relation").filter(x => x.n), total, k => relColors[k], k => k);
       const verifyRows = ["Verified","Narrower","Needs Archive","Unverified"].map(k => ({key:k, n:f.filter(e => status(e) === k).length})).filter(x => x.n);
-      bars("verifyBars", verifyRows, total, k => ({Verified:"#22c55e",Narrower:"#f59e0b","Needs Archive":"#60a5fa",Unverified:"#71717a"}[k]), k => k);
+      bars("verifyBars", verifyRows, total, k => ({Verified:"#b8e62f",Narrower:"#d6bb45","Needs Archive":"#6a35e8",Unverified:"#a59d8b"}[k]), k => k);
       $("feed").innerHTML = f.map(e => card(e)).join("") || `<div class="card"><div class="summary">No records match the active filters.</div></div>`;
     }
     function card(e) {
@@ -281,7 +281,7 @@
           <span class="badge" style="--c:${l[3]}">${esc(l[1])}</span>
           <span class="badge" style="--c:${relColors[e.relation]}">${esc(e.relation)}</span>
           <span class="badge" style="--c:${topicColors[e.topic]}">${e.topic}</span>
-          <span class="badge" style="--c:#22c55e">${esc(status(e))}</span>
+          <span class="badge" style="--c:#b8e62f">${esc(status(e))}</span>
           <span class="date">${esc(e.date)}</span>
         </div>
         <div class="title">${esc(e.title)}</div>
