@@ -215,6 +215,17 @@
       {id:"e4",layer:"seo",source:"RDS quickstarts",title:"Public database examples reduce defense-in-depth",topic:"RDS",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2024-02",summary:"Publicly reachable databases still need auth and network rules, but private subnet placement is the safer production baseline."}
     ];
 
+    // Pre-compute per-event derived values once at startup
+    const statusMap = {A:"Verified",B:"Verified",C:"Narrower",D:"Needs Archive"};
+    const verifyColors = {Verified:"#22c55e",Narrower:"#f59e0b","Needs Archive":"#60a5fa",Unverified:"#71717a"};
+    const layerMap = Object.fromEntries(layers.map(l => [l[0], l]));
+    const layerEventCounts = Object.fromEntries(layers.map(l => [l[0], events.filter(e => e.layer === l[0]).length]));
+    const evidenceEventCounts = Object.fromEntries(Object.keys(evidenceText).map(k => [k, events.filter(e => e.evidence === k).length]));
+    events.forEach(e => {
+      e._status = statusMap[e.evidence] || "Unverified";
+      e._searchStr = [e.title, e.source, e.topic, e.summary, e.relation].join(" ").toLowerCase();
+    });
+
     const state = {
       view: "dashboard",
       q: "",
@@ -226,12 +237,20 @@
 
     const $ = (id) => document.getElementById(id);
     const esc = (s) => String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    const status = (e) => e.evidence === "A" || e.evidence === "B" ? "Verified" : e.evidence === "C" ? "Narrower" : e.evidence === "D" ? "Needs Archive" : "Unverified";
-    const layer = (k) => layers.find(x => x[0] === k);
-    const filtered = () => events.filter(e =>
-      state.layers.has(e.layer) && state.rels.has(e.relation) && state.ev.has(e.evidence) && state.topics.has(e.topic) &&
-      (!state.q || [e.title,e.source,e.topic,e.summary,e.relation].join(" ").toLowerCase().includes(state.q))
-    );
+    const layer = (k) => layerMap[k];
+
+    // Compute filtered list once per render cycle
+    let _filtered = null;
+    function getFiltered() {
+      if (_filtered) return _filtered;
+      _filtered = events.filter(e =>
+        state.layers.has(e.layer) && state.rels.has(e.relation) && state.ev.has(e.evidence) && state.topics.has(e.topic) &&
+        (!state.q || e._searchStr.includes(state.q))
+      );
+      return _filtered;
+    }
+    function invalidate() { _filtered = null; }
+
     function toggleSet(set, all, val) {
       if (set.size === all.length) { set.clear(); set.add(val); return; }
       if (set.has(val) && set.size === 1) { all.forEach(x => set.add(x)); return; }
@@ -239,39 +258,47 @@
     }
     function renderControls() {
       $("layerControls").innerHTML = layers.map(l => {
-        const n = events.filter(e => e.layer === l[0]).length;
-        return `<button class="layer ${state.layers.has(l[0]) ? "on" : ""}" data-layer="${l[0]}"><span class="dot" style="background:${l[3]}"></span><span><span class="layer-name" style="color:${state.layers.has(l[0]) ? l[3] : "#71717a"}">${esc(l[1])}</span><span class="layer-note">${esc(l[2])}</span></span><span class="count">${n}</span></button>`;
+        return `<button class="layer ${state.layers.has(l[0]) ? "on" : ""}" data-layer="${l[0]}"><span class="dot" style="background:${l[3]}"></span><span><span class="layer-name" style="color:${state.layers.has(l[0]) ? l[3] : "#71717a"}">${esc(l[1])}</span><span class="layer-note">${esc(l[2])}</span></span><span class="count">${layerEventCounts[l[0]]}</span></button>`;
       }).join("");
-      $("evidenceControls").innerHTML = Object.keys(evidenceText).map(k => `<button class="toggle ${state.ev.has(k) ? "on" : ""}" data-ev="${k}"><span>${k} · ${esc(evidenceText[k])}</span><span>${events.filter(e => e.evidence === k).length}</span></button>`).join("");
+      $("evidenceControls").innerHTML = Object.keys(evidenceText).map(k => `<button class="toggle ${state.ev.has(k) ? "on" : ""}" data-ev="${k}"><span>${k} · ${esc(evidenceText[k])}</span><span>${evidenceEventCounts[k]}</span></button>`).join("");
       $("relationControls").innerHTML = `<span class="label" style="margin:0 4px 0 0">Relation</span>` + Object.keys(relColors).map(r => `<button class="chip ${state.rels.has(r) ? "on" : ""}" style="--c:${relColors[r]}" data-rel="${esc(r)}">${esc(r)}</button>`).join("");
       $("topicControls").innerHTML = `<span class="label" style="margin:0 4px 0 0">Topic</span>` + Object.keys(topicColors).map(t => `<button class="chip ${state.topics.has(t) ? "on" : ""}" style="--c:${topicColors[t]}" data-topic="${t}">${t}</button>`).join("");
-    }
-    function countsBy(list, key) {
-      const f = filtered();
-      return list.map(v => ({key:v, n:f.filter(e => e[key === "layer" ? "layer" : key === "evidence" ? "evidence" : "relation"] === v).length}));
     }
     function bars(target, rows, total, colorFor, labelFor) {
       $(target).innerHTML = rows.map(r => `<div class="bar-row"><div class="bar-name" style="--c:${colorFor(r.key)}">${esc(labelFor(r.key))}</div><div class="bar"><div class="fill" style="--c:${colorFor(r.key)};--w:${total ? Math.round(r.n / total * 100) : 0}%"></div></div><div class="count">${r.n}</div></div>`).join("");
     }
     function renderDashboard() {
-      const f = filtered();
+      const f = getFiltered();
       $("visibleCount").textContent = `${f.length} / ${events.length}`;
-      const verified = f.filter(e => status(e) === "Verified").length;
-      const decisions = f.filter(e => e.relation !== "Current Alignment").length;
-      const topics = new Set(f.map(e => e.topic)).size;
+      let verified = 0, decisions = 0;
+      const topicSet = new Set();
+      const relSet = new Set();
+      // Layer and relation counts in one pass
+      const layerCounts = Object.fromEntries(layers.map(l => [l[0], 0]));
+      const relCounts = Object.fromEntries(Object.keys(relColors).map(r => [r, 0]));
+      const statusCounts = {Verified:0,Narrower:0,"Needs Archive":0,Unverified:0};
+      for (const e of f) {
+        if (e._status === "Verified") verified++;
+        if (e.relation !== "Current Alignment") decisions++;
+        topicSet.add(e.topic);
+        relSet.add(e.relation);
+        layerCounts[e.layer]++;
+        relCounts[e.relation]++;
+        statusCounts[e._status]++;
+      }
       $("metrics").innerHTML = [
         ["Visible Records", f.length, "of " + events.length, "#22d3ee"],
         ["Verified", verified, "A/B evidence", "#22c55e"],
         ["Load-bearing", decisions, "non-aligned", "#f97316"],
-        ["Topics", topics, "active filters", "#a78bfa"]
+        ["Topics", topicSet.size, "active filters", "#a78bfa"]
       ].map(x => `<div class="tile"><div class="mini">${x[0]}</div><div class="num" style="color:${x[3]}">${x[1]}</div><div class="mini">${x[2]}</div></div>`).join("");
       const total = Math.max(1, f.length);
       $("layerTotal").textContent = f.length + " visible";
-      $("relTotal").textContent = new Set(f.map(e => e.relation)).size + " types";
-      bars("layerBars", countsBy(layers.map(l => l[0]), "layer"), total, k => layer(k)[3], k => layer(k)[1]);
-      bars("relBars", countsBy(Object.keys(relColors), "relation").filter(x => x.n), total, k => relColors[k], k => k);
-      const verifyRows = ["Verified","Narrower","Needs Archive","Unverified"].map(k => ({key:k, n:f.filter(e => status(e) === k).length})).filter(x => x.n);
-      bars("verifyBars", verifyRows, total, k => ({Verified:"#22c55e",Narrower:"#f59e0b","Needs Archive":"#60a5fa",Unverified:"#71717a"}[k]), k => k);
+      $("relTotal").textContent = relSet.size + " types";
+      bars("layerBars", layers.map(l => ({key:l[0], n:layerCounts[l[0]]})), total, k => layer(k)[3], k => layer(k)[1]);
+      bars("relBars", Object.keys(relColors).map(r => ({key:r, n:relCounts[r]})).filter(x => x.n), total, k => relColors[k], k => k);
+      const verifyRows = ["Verified","Narrower","Needs Archive","Unverified"].map(k => ({key:k, n:statusCounts[k]})).filter(x => x.n);
+      bars("verifyBars", verifyRows, total, k => verifyColors[k], k => k);
       $("feed").innerHTML = f.map(e => card(e)).join("") || `<div class="card"><div class="summary">No records match the active filters.</div></div>`;
     }
     function card(e) {
@@ -281,7 +308,7 @@
           <span class="badge" style="--c:${l[3]}">${esc(l[1])}</span>
           <span class="badge" style="--c:${relColors[e.relation]}">${esc(e.relation)}</span>
           <span class="badge" style="--c:${topicColors[e.topic]}">${e.topic}</span>
-          <span class="badge" style="--c:#22c55e">${esc(status(e))}</span>
+          <span class="badge" style="--c:#22c55e">${esc(e._status)}</span>
           <span class="date">${esc(e.date)}</span>
         </div>
         <div class="title">${esc(e.title)}</div>
@@ -290,15 +317,16 @@
       </article>`;
     }
     function renderRegister() {
-      $("rows").innerHTML = filtered().map(e => {
+      $("rows").innerHTML = getFiltered().map(e => {
         const l = layer(e.layer);
-        return `<tr><td class="cell">${e.id}</td><td><span style="color:${l[3]}">${esc(l[1])}</span></td><td>${esc(e.relation)}</td><td class="cell">${e.evidence}</td><td>${esc(status(e))}</td><td>${e.topic}</td><td class="cell">${esc(e.date)}</td><td>${esc(e.title)}<br><span class="source">${esc(e.source)}</span></td></tr>`;
+        return `<tr><td class="cell">${e.id}</td><td><span style="color:${l[3]}">${esc(l[1])}</span></td><td>${esc(e.relation)}</td><td class="cell">${e.evidence}</td><td>${esc(e._status)}</td><td>${e.topic}</td><td class="cell">${esc(e.date)}</td><td>${esc(e.title)}<br><span class="source">${esc(e.source)}</span></td></tr>`;
       }).join("");
     }
     function render() {
+      invalidate();
       renderControls();
-      renderDashboard();
-      renderRegister();
+      if (state.view === "dashboard") renderDashboard();
+      else renderRegister();
       $("dashboardView").classList.toggle("hide", state.view !== "dashboard");
       $("registerView").classList.toggle("hide", state.view !== "register");
       document.querySelectorAll(".tab").forEach(b => b.classList.toggle("on", b.dataset.view === state.view));
@@ -321,7 +349,12 @@
       }
       render();
     });
-    $("search").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+    // Debounce search to avoid re-rendering on every keystroke
+    let _searchTimer = 0;
+    $("search").addEventListener("input", e => {
+      clearTimeout(_searchTimer);
+      _searchTimer = setTimeout(() => { state.q = e.target.value.trim().toLowerCase(); render(); }, 120);
+    });
     function bootGL() {
       const canvas = $("glfield");
       const gl = canvas.getContext("webgl", {alpha:true, antialias:true});
@@ -352,6 +385,9 @@
         const hex = l[3].slice(1).match(/../g).map(x => parseInt(x, 16) / 255);
         return {a:i * 0.53, r:.22 + (i % 7) * .085, c:hex};
       });
+      // Pre-allocate typed array for the draw loop — avoids GC pressure each frame
+      const data = new Float32Array(pts.length * 5);
+      // Use ResizeObserver to update viewport only on actual size changes
       function fit() {
         const dpr = window.devicePixelRatio || 1;
         const w = Math.max(320, canvas.clientWidth);
@@ -360,18 +396,24 @@
         canvas.height = Math.floor(h * dpr);
         gl.viewport(0, 0, canvas.width, canvas.height);
       }
+      fit();
+      if (typeof ResizeObserver !== "undefined") {
+        new ResizeObserver(fit).observe(canvas);
+      }
       function draw(t) {
-        fit();
-        const data = [];
         const k = t * 0.00035;
-        pts.forEach((pt, i) => {
-          const x = Math.cos(pt.a + k * (1 + i % 3)) * pt.r;
-          const y = Math.sin(pt.a * 1.7 - k * (1 + i % 5)) * pt.r * 0.7;
-          data.push(x, y, pt.c[0], pt.c[1], pt.c[2]);
-        });
+        for (let i = 0; i < pts.length; i++) {
+          const pt = pts[i];
+          const base = i * 5;
+          data[base]     = Math.cos(pt.a + k * (1 + i % 3)) * pt.r;
+          data[base + 1] = Math.sin(pt.a * 1.7 - k * (1 + i % 5)) * pt.r * 0.7;
+          data[base + 2] = pt.c[0];
+          data[base + 3] = pt.c[1];
+          data[base + 4] = pt.c[2];
+        }
         gl.clearColor(0,0,0,0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.DYNAMIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW);
         gl.drawArrays(gl.POINTS, 0, pts.length);
         requestAnimationFrame(draw);
       }
