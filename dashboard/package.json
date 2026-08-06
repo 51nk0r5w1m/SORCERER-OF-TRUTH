@@ -1,0 +1,17 @@
+{
+  "name": "sorcerer-of-truth-uap-pipeline-observatory",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "observable preview",
+    "build": "observable build",
+    "clean": "observable clean"
+  },
+  "dependencies": {
+    "@observablehq/framework": "^1.13.4",
+    "@observablehq/inputs": "^0.12.0",
+    "@observablehq/plot": "^0.6.17",
+    "d3-dsv": "^3.0.1",
+    "htl": "^0.3.1"
+  }
+}

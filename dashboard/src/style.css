@@ -1,0 +1,312 @@
+@import url("observablehq:default.css");
+
+:root {
+  --theme-background: #07070b;
+  --theme-background-alt: #101016;
+  --theme-foreground: #f2ead8;
+  --theme-foreground-muted: #a59d8b;
+  --theme-foreground-faint: #6e6a73;
+  --theme-foreground-focus: #b8e62f;
+  --theme-foreground-alt: #b8e62f;
+  --signal-purple: #6a35e8;
+  --signal-lime: #b8e62f;
+  --signal-coral: #f27863;
+  --panel: rgba(16, 16, 22, 0.88);
+  --line: rgba(242, 234, 216, 0.14);
+}
+
+body {
+  background:
+    radial-gradient(circle at 90% 0%, rgba(106, 53, 232, 0.16), transparent 34rem),
+    linear-gradient(rgba(242, 234, 216, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 234, 216, 0.018) 1px, transparent 1px),
+    var(--theme-background);
+  background-size: auto, 24px 24px, 24px 24px, auto;
+}
+
+#observablehq-main,
+#observablehq-header {
+  max-width: 1600px;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  font-size: clamp(2.7rem, 8vw, 6.8rem);
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+h2 {
+  margin-top: 2.4rem;
+  text-transform: uppercase;
+}
+
+.hero {
+  position: relative;
+  display: grid;
+  min-height: 420px;
+  margin: -1rem 0 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #08070d;
+  isolation: isolate;
+}
+
+.hero::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background:
+    linear-gradient(90deg, rgba(5, 5, 7, 0.98) 0%, rgba(5, 5, 7, 0.72) 44%, rgba(5, 5, 7, 0.08) 78%);
+}
+
+.hero-art {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 48%;
+  filter: saturate(0.9) contrast(1.08);
+}
+
+.hero-copy {
+  align-self: end;
+  max-width: 800px;
+  padding: clamp(1.5rem, 5vw, 4.5rem);
+}
+
+.eyebrow,
+.section-label {
+  color: var(--signal-lime);
+  font: 800 0.72rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0.25rem 0 1rem;
+}
+
+.hero p {
+  max-width: 58ch;
+  color: #d4ccbd;
+  font-size: 1rem;
+}
+
+.filter-rack {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(7, 7, 11, 0.8);
+}
+
+.filter-rack form {
+  margin: 0;
+}
+
+.filter-search {
+  grid-column: 1 / -1;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin: 1rem 0;
+}
+
+.metric {
+  min-height: 150px;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--signal-purple);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.metric span,
+.metric small {
+  display: block;
+  color: var(--theme-foreground-muted);
+  font: 700 0.68rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.metric strong {
+  display: block;
+  margin: 0.3rem 0;
+  color: #f2ead8;
+  font-size: clamp(2.5rem, 5vw, 4.8rem);
+  line-height: 1;
+}
+
+.metric-lime { border-top-color: var(--signal-lime); }
+.metric-coral { border-top-color: var(--signal-coral); }
+.metric-purple { border-top-color: #8b8cf8; }
+
+.card {
+  border-color: var(--line);
+  background: var(--panel);
+}
+
+.chart-title {
+  margin: 0 0 0.2rem;
+  color: #f2ead8;
+  font-size: 1rem;
+  text-transform: uppercase;
+}
+
+.chart-note,
+.data-note {
+  color: var(--theme-foreground-muted);
+  font-size: 0.78rem;
+}
+
+.detail {
+  min-height: 240px;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--signal-lime);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.detail h3 {
+  margin-top: 0.4rem;
+  font-size: 1.35rem;
+}
+
+.detail-meta {
+  color: var(--theme-foreground-muted);
+  font: 700 0.72rem/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-transform: uppercase;
+}
+
+.grade-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.grade {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--grade);
+  border-radius: 5px;
+  background: var(--panel);
+}
+
+.grade strong {
+  color: var(--grade);
+  font-size: 2rem;
+}
+
+.download-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+
+.download-bar a {
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--signal-lime);
+  font: 800 0.72rem/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.lineage {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2rem;
+  padding: 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.lineage-step {
+  position: relative;
+}
+
+.lineage-step:not(:last-child)::after {
+  position: absolute;
+  top: 1rem;
+  right: -1.4rem;
+  color: var(--signal-lime);
+  content: "→";
+  font-size: 1.4rem;
+}
+
+.lineage-step b,
+.lineage-step code {
+  display: block;
+}
+
+.lineage-step b {
+  margin: 0.3rem 0;
+  color: #f2ead8;
+  text-transform: uppercase;
+}
+
+.fingerprint {
+  overflow-wrap: anywhere;
+  color: var(--signal-lime);
+  font: 700 0.72rem/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@media (max-width: 900px) {
+  .filter-rack,
+  .metric-grid,
+  .grade-grid,
+  .lineage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hero::after {
+    background: linear-gradient(0deg, rgba(5, 5, 7, 0.96), rgba(5, 5, 7, 0.38));
+  }
+}
+
+@media (max-width: 560px) {
+  .filter-rack,
+  .metric-grid,
+  .grade-grid,
+  .lineage {
+    grid-template-columns: 1fr;
+  }
+
+  .lineage-step::after {
+    display: none;
+  }
+
+  .hero {
+    min-height: 520px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
