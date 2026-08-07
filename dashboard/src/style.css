@@ -2,96 +2,20 @@
 @import url("observablehq:theme-dark.css");
 @import url("observablehq:theme-alt.css");
 @import url("observablehq:theme-dashboard.css");
-@import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 
-/* BRUTALIST AESTHETIC - FUCK IT UP */
-:root {
-  --sans-serif: "Space Mono", Consolas, monospace !important;
-  --serif: "Space Mono", Consolas, monospace !important;
-  --monospace: "Space Mono", Consolas, monospace !important;
-  --theme-background: #030308 !important;
-  --theme-foreground: #ffffff !important;
-  --theme-foreground-muted: #a1a1aa !important;
-}
-
-body {
-  background-color: #030308 !important;
-  position: relative;
-}
-
-/* CRT Scanlines & Screen Glitch */
-body::after {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: 
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
-    linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
-  z-index: 999;
-  background-size: 100% 4px, 3px 100%;
-  pointer-events: none;
-}
-
-::selection {
-  background: #ef4444 !important;
-  color: #030308 !important;
-}
-
-/* Hard borders on panels */
-.card, .grid {
-  border: 1px solid #3f3f46 !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-}
-.card:hover {
-  border-color: #ef4444 !important;
-  box-shadow: -4px 4px 0px rgba(239, 68, 68, 0.3) !important;
-}
-
-/* Chromatic Aberration Hover effects for Headers */
-h1:hover, h2:hover, a:hover {
-  text-shadow: 2px 0 #ef4444, -2px 0 #3b82f6 !important;
-  animation: glitch-skew 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
-}
-
-@keyframes glitch-skew {
-  0% { transform: skew(0deg); }
-  20% { transform: skew(-5deg); text-shadow: 3px 0 #ef4444, -3px 0 #3b82f6; }
-  40% { transform: skew(5deg); text-shadow: -3px 0 #ef4444, 3px 0 #3b82f6; }
-  60% { transform: skew(-2deg); }
-  80% { transform: skew(2deg); }
-  100% { transform: skew(0deg); }
-}
-
-input[type="checkbox"],
-input[type="radio"] {
-  accent-color: #ef4444 !important;
-  cursor: crosshair;
-  border-radius: 0 !important;
-}
-
-h2, .metric-number, td, th, code, pre {
-  font-family: "Space Mono", monospace !important;
-  text-transform: uppercase;
-}
-
-/* Sharp Terminal Classification Tag System */
+/* Clean, flat, readable UI enhancements */
 .category-tag {
-  font-family: "Space Mono", monospace;
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-family: var(--monospace, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
   padding: 2px 6px;
   margin-right: 4px;
-  border: 1px solid #e2e8f0;
-  background-color: #ffffff;
-  color: #000000;
-  border-radius: 0 !important; /* Sharp boxy classification stamps */
+  border: 1px solid var(--theme-foreground-faint, #3f3f46);
+  background-color: var(--theme-background-alt, #18181b);
+  color: var(--theme-foreground, #f4f4f5);
+  border-radius: 3px;
   display: inline-block;
   white-space: nowrap;
 }
@@ -101,27 +25,9 @@ h2, .metric-number, td, th, code, pre {
   color: #ffffff;
   border-color: #ef4444;
 }
-.category-tag.primary:hover {
-  animation: glitch-skew 0.25s linear infinite alternate;
-}
 
 .category-tag.dark {
-  background-color: #18181b;
-  color: #f4f4f5;
-  border-color: #ef4444;
-}
-
-@keyframes scan-line {
-  0% { transform: translateY(-100vh); }
-  100% { transform: translateY(100vh); }
-}
-body::before {
-  content: "";
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 10px;
-  background: rgba(239, 68, 68, 0.4);
-  opacity: 0.2;
-  animation: scan-line 6s linear infinite;
-  z-index: 998;
-  pointer-events: none;
+  background-color: #09090b;
+  color: #a1a1aa;
+  border-color: #27272a;
 }
