@@ -7,24 +7,24 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #050507;
-      --panel: rgba(13,13,18,.84);
-      --panel2: #101016;
-      --line: rgba(242,234,216,.17);
-      --muted: #a59d8b;
-      --text: #f2ead8;
-      --cream: #f2ead8;
-      --purple: #3c179b;
-      --hot: #6a35e8;
-      --lime: #b8e62f;
-      --coral: #f27863;
+      --bg: #09090b;
+      --panel: #111113;
+      --panel2: #161618;
+      --line: rgba(255,255,255,.075);
+      --muted: #71717a;
+      --text: #e4e4e7;
+      --cyan: #22d3ee;
+      --blue: #60a5fa;
+      --violet: #a78bfa;
+      --orange: #fb923c;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --green: #22c55e;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      background:
-        radial-gradient(circle at 76% 12%, rgba(106,53,232,.18), transparent 28%),
-        linear-gradient(180deg, #0a0a0f, var(--bg));
+      background: var(--bg);
       color: var(--text);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0;
@@ -32,7 +32,7 @@
     button, input { font: inherit; }
     button { cursor: pointer; }
     .app { display: grid; grid-template-columns: 260px 1fr; min-block-size: 100vh; }
-    .side { border-inline-end: 1px solid var(--line); padding: 14px; background: rgba(5,5,7,.94); position: sticky; top: 0; block-size: 100vh; overflow: auto; }
+    .side { border-inline-end: 1px solid var(--line); padding: 14px; background: #0b0b0d; position: sticky; top: 0; block-size: 100vh; overflow: auto; }
     .main { min-inline-size: 0; }
     .top { border-block-end: 1px solid var(--line); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .eyebrow, .label, .mini, .chip, .count, .cell { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
@@ -40,7 +40,7 @@
     h1 { margin: 3px 0 0; font-size: 18px; line-height: 1.2; font-weight: 650; }
     .tabs { display: flex; gap: 4px; padding: 3px; border: 1px solid var(--line); background: rgba(255,255,255,.035); border-radius: 4px; }
     .tab { border: 0; border-radius: 3px; background: transparent; color: var(--muted); padding: 7px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: .14em; }
-    .tab.on { color: var(--lime); background: rgba(184,230,47,.11); }
+    .tab.on { color: var(--text); background: rgba(255,255,255,.05); border-bottom: 2px solid var(--cyan); }
     .section { margin-block-end: 18px; }
     .label { color: #52525b; font-size: 9px; text-transform: uppercase; letter-spacing: .16em; margin: 0 0 8px 2px; }
     .layer { width: 100%; text-align: start; border: 1px solid transparent; background: transparent; border-radius: 4px; padding: 8px; display: grid; grid-template-columns: 12px 1fr auto; gap: 9px; align-items: start; color: var(--muted); }
@@ -50,22 +50,22 @@
     .layer-note { margin-block-start: 3px; font-size: 9px; color: #52525b; }
     .toggle { width: 100%; border: 1px solid transparent; background: transparent; color: var(--muted); border-radius: 4px; padding: 7px 8px; display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
     .toggle.on { background: rgba(255,255,255,.035); border-color: var(--line); color: var(--text); }
-    .toolbar { position: sticky; top: 0; z-index: 3; background: rgba(5,5,7,.96); border-block-end: 1px solid var(--line); padding: 12px 18px; }
+    .toolbar { position: sticky; top: 0; z-index: 3; background: rgba(9,9,11,.96); border-block-end: 1px solid var(--line); padding: 12px 18px; }
     .search { display: flex; gap: 10px; align-items: center; margin-block-end: 10px; }
     .search input { flex: 1; min-inline-size: 180px; border: 1px solid var(--line); background: rgba(255,255,255,.04); color: var(--text); border-radius: 4px; padding: 9px 10px; font-size: 12px; outline: 0; }
     .count { color: var(--muted); font-size: 10px; white-space: nowrap; }
     .chips { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-block-start: 7px; }
     .chip { border: 1px solid var(--line); background: rgba(255,255,255,.03); color: var(--muted); border-radius: 4px; padding: 5px 7px; font-size: 10px; text-transform: uppercase; letter-spacing: .11em; }
-    .chip.on { color: var(--c); background: color-mix(in srgb, var(--c) 15%, transparent); border-color: color-mix(in srgb, var(--c) 35%, transparent); }
-    .content { padding: 14px 18px 18px; }
+    .chip.on { color: var(--c); background: color-mix(in srgb, var(--c) 8%, transparent); border-color: color-mix(in srgb, var(--c) 18%, transparent); }
+    .content { padding: 16px 20px 20px; }
     .grid { display: grid; gap: 10px; }
     .metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
-    .tile, .panel, .card { border: 1px solid var(--line); background: rgba(5,5,7,.72); border-radius: 4px; }
-    .tile { padding: 11px; min-inline-size: 0; }
+    .tile, .panel, .card { border: 1px solid rgba(255,255,255,.055); background: rgba(255,255,255,.018); border-radius: 4px; }
+    .tile { padding: 13px 13px 13px 14px; min-inline-size: 0; border-left: 3px solid var(--tile-accent, var(--line)); }
     .tile .mini { color: var(--muted); font-size: 9px; text-transform: uppercase; letter-spacing: .14em; }
-    .tile .num { margin-block-start: 5px; font: 700 22px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .tile .num { margin-block-start: 5px; font: 600 22px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
     .split { grid-template-columns: 1.1fr .9fr; margin-block-start: 10px; }
-    .panel { padding: 12px; }
+    .panel { padding: 14px 16px; }
     .panel-head { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin-block-end: 10px; }
     .bar-row { display: grid; grid-template-columns: 160px 1fr 34px; gap: 10px; align-items: center; margin-block: 8px; }
     .bar-name { min-inline-size: 0; font-size: 11px; color: var(--c); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -74,18 +74,18 @@
     .feed-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 16px 0 8px; }
     .card { padding: 12px; margin-block-end: 8px; }
     .card-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-    .badge { font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .11em; padding: 5px 6px; border-radius: 3px; color: var(--c); background: color-mix(in srgb, var(--c) 13%, transparent); }
+    .badge { font: 600 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .11em; padding: 5px 6px; border-radius: 3px; color: var(--c); background: color-mix(in srgb, var(--c) 7%, transparent); border: 1px solid color-mix(in srgb, var(--c) 14%, transparent); }
     .date { margin-inline-start: auto; color: #52525b; font-size: 10px; }
     .title { margin: 9px 0 6px; color: #f4f4f5; font-size: 14px; line-height: 1.25; font-weight: 620; }
     .source { color: #52525b; font-size: 10px; }
     .summary { color: #a1a1aa; font-size: 12px; line-height: 1.48; margin-block-start: 8px; }
     table { width: 100%; border-collapse: collapse; min-inline-size: 980px; }
     th, td { border-block-end: 1px solid rgba(255,255,255,.055); padding: 8px 10px; text-align: start; }
-    th { position: sticky; top: 0; background: #101016; color: #a59d8b; font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .14em; }
+    th { position: sticky; top: 0; background: #101012; color: #52525b; font: 700 9px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-transform: uppercase; letter-spacing: .14em; }
     td { font-size: 12px; color: #d4d4d8; }
     .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: 4px; }
     .hide { display: none; }
-    .glfield { inline-size: 100%; block-size: 116px; display: block; border: 1px solid var(--line); border-radius: 4px; background: rgba(255,255,255,.018); margin-block-end: 10px; }
+    .maze { width: 100%; height: 120px; display: block; border: 1px solid var(--line); border-radius: 4px; background: rgba(255,255,255,.018); margin-block-end: 10px; }
   </style>
 </head>
 <body>
@@ -129,7 +129,7 @@
       </section>
 
       <section class="content" id="dashboardView">
-        <canvas id="glfield" class="glfield"></canvas>
+        <canvas id="maze" class="maze"></canvas>
         <div class="grid metrics" id="metrics"></div>
         <div class="grid split">
           <div class="panel">
@@ -165,26 +165,26 @@
 
   <script>
     const layers = [
-      ["standards","Standards","Normative","#b8e62f"],
-      ["architecture","Architecture Guidance","Official architecture","#6a35e8"],
-      ["docs","Official Docs","Service behavior","#f2ead8"],
-      ["samples","Samples / Reference Impls","Illustrative code","#f27863"],
-      ["community","Community Trackers","Observed change","#d6bb45"],
-      ["seo","Search / Tutorials / AI","Copied guidance","#8f5cff"]
+      ["standards","Standards","Normative","#22d3ee"],
+      ["architecture","Architecture Guidance","Official architecture","#818cf8"],
+      ["docs","Official Docs","Service behavior","#a78bfa"],
+      ["samples","Samples / Reference Impls","Illustrative code","#fb923c"],
+      ["community","Community Trackers","Observed change","#fbbf24"],
+      ["seo","Search / Tutorials / AI","Copied guidance","#f87171"]
     ];
     const relColors = {
-      "Normative Conflict":"#f27863",
-      "Unsafe Default":"#f27863",
-      "Console/API/IaC Divergence":"#d6bb45",
-      "Editorial Omission":"#a59d8b",
-      "Legacy Compatibility Exposure":"#d6bb45",
-      "Guidance Drift":"#6a35e8",
-      "Sample-Code Defect":"#f27863",
-      "Doc/Product Mismatch":"#8f5cff",
-      "Ecosystem Observation":"#a59d8b",
-      "Current Alignment":"#b8e62f"
+      "Normative Conflict":"#ef4444",
+      "Unsafe Default":"#f97316",
+      "Console/API/IaC Divergence":"#eab308",
+      "Editorial Omission":"#94a3b8",
+      "Legacy Compatibility Exposure":"#ca8a04",
+      "Guidance Drift":"#818cf8",
+      "Sample-Code Defect":"#fb923c",
+      "Doc/Product Mismatch":"#a78bfa",
+      "Ecosystem Observation":"#71717a",
+      "Current Alignment":"#22c55e"
     };
-    const topicColors = {IAM:"#6a35e8",TLS:"#b8e62f",CORS:"#f27863",Auth:"#8f5cff",Session:"#d6bb45",Headers:"#f2ead8",Crypto:"#d6bb45",Input:"#b8e62f",Logging:"#a59d8b",Secrets:"#f27863",EKS:"#b8e62f",Docker:"#8f5cff",React:"#f27863",S3:"#d6bb45",VPC:"#8f5cff",KMS:"#6a35e8",RDS:"#b8e62f",ECR:"#f27863",CICD:"#d6bb45",K8s:"#8f5cff",WAF:"#6a35e8"};
+    const topicColors = {IAM:"#818cf8",TLS:"#22d3ee",CORS:"#fb923c",Auth:"#a78bfa",Session:"#e879f9",Headers:"#34d399",Crypto:"#fbbf24",Input:"#60a5fa",Logging:"#94a3b8",Secrets:"#ef4444",EKS:"#22c55e",Docker:"#38bdf8",React:"#f472b6",S3:"#ca8a04",VPC:"#0ea5e9",KMS:"#c084fc",RDS:"#22c55e",ECR:"#f87171",CICD:"#f97316",K8s:"#3b82f6",WAF:"#d946ef",Lambda:"#a78bfa",CloudFront:"#38bdf8",DynamoDB:"#fbbf24",SNS:"#fb923c",SQS:"#818cf8",StepFn:"#22d3ee",Cognito:"#e879f9",API:"#60a5fa",Terraform:"#818cf8",Network:"#34d399",Containers:"#38bdf8",DNS:"#94a3b8",Tokens:"#fbbf24",RBAC:"#c084fc",OIDC:"#22d3ee",SAML:"#f472b6",MFA:"#22c55e",Storage:"#fb923c",Config:"#eab308"};
     const evidenceText = {
       A: "Version-pinned",
       B: "Current official docs",
@@ -193,26 +193,121 @@
       E: "Limited evidence"
     };
     const events = [
+      // === STANDARDS (s1-s18) ===
       {id:"s1",layer:"standards",source:"RFC 8996 / BCP 195",title:"TLS 1.0 and 1.1 formally deprecated and must not be negotiated",topic:"TLS",relation:"Current Alignment",evidence:"A",life:"Current",date:"2021-03",summary:"Normative TLS baseline for lower-layer configuration checks. Any source that still permits TLS 1.0 or 1.1 creates drift from the standard."},
+      {id:"s2",layer:"standards",source:"RFC 6750 / OAuth 2.0 Bearer Token Usage",title:"Bearer tokens without sender constraint are replayable by design",topic:"Auth",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2012-10",summary:"Bearer tokens grant access to whoever holds them. DPoP or mTLS binding is needed to prevent token replay after exfiltration."},
       {id:"s3",layer:"standards",source:"OWASP CORS Cheat Sheet / Fetch",title:"Wildcard origin with credentials is rejected by browsers",topic:"CORS",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2022-01",summary:"Authenticated browser APIs need explicit origin allowlists. Wildcard CORS is only valid for public resources without credentials."},
+      {id:"s4",layer:"standards",source:"RFC 8725 / JWT Best Current Practices",title:"JWT 'none' algorithm must be rejected by all validators",topic:"Tokens",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2020-02",summary:"The 'none' algorithm bypass is a known attack vector. Libraries must enforce algorithm allowlists and reject unsigned tokens."},
       {id:"s5",layer:"standards",source:"NIST SP 800-63B",title:"PSTN out-of-band auth is restricted at AAL2 and cannot satisfy AAL3",topic:"Auth",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2017-06",summary:"SMS OTP can be acceptable only inside a documented assurance boundary. Stronger auth is needed for AAL3 targets."},
+      {id:"s6",layer:"standards",source:"NIST SP 800-52r2",title:"TLS server certificates must use RSA 2048+ or ECDSA P-256+",topic:"Crypto",relation:"Current Alignment",evidence:"A",life:"Current",date:"2019-08",summary:"Certificate key sizes below the threshold are non-compliant. Automated certificate management should enforce minimum key parameters."},
       {id:"s7",layer:"standards",source:"OWASP Secrets Management Cheat Sheet",title:"Secrets must not be stored in source control",topic:"Secrets",relation:"Normative Conflict",evidence:"B",life:"Current",date:"2022-04",summary:"Prefer workload identity and temporary credentials. Static secrets need controlled storage, rotation, audit, and revocation."},
-      {id:"a1",layer:"architecture",source:"AWS Well-Architected / CloudTrail docs",title:"CloudTrail console and IaC paths create different trail scope",topic:"Logging",relation:"Console/API/IaC Divergence",evidence:"B",life:"Current",date:"2022-06",summary:"Console-created trails can differ from CLI, API, CloudFormation, or CDK trails unless multi-region scope is explicit."},
+      {id:"s8",layer:"standards",source:"OWASP ASVS v4.0.3",title:"Session tokens must be invalidated on logout and password change",topic:"Session",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2021-10",summary:"Server-side session invalidation prevents token reuse. JWTs require explicit revocation lists or short expiry with rotation."},
+      {id:"s9",layer:"standards",source:"RFC 9110 / HTTP Semantics",title:"DELETE and PUT are not safe methods and must not be cached",topic:"API",relation:"Current Alignment",evidence:"A",life:"Current",date:"2022-06",summary:"HTTP method semantics define caching and safety properties. Middleware must respect method classification for security decisions."},
+      {id:"s10",layer:"standards",source:"NIST SP 800-131Ar2",title:"SHA-1 is disallowed for digital signatures",topic:"Crypto",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2019-03",summary:"SHA-1 collision attacks are practical. All signing operations must use SHA-256 or stronger. Legacy systems need migration plans."},
+      {id:"s11",layer:"standards",source:"RFC 8446 / TLS 1.3",title:"TLS 1.3 removes static RSA key exchange and compression",topic:"TLS",relation:"Current Alignment",evidence:"A",life:"Current",date:"2018-08",summary:"Forward secrecy is mandatory in TLS 1.3. Systems negotiating TLS 1.2 should prefer ECDHE cipher suites."},
+      {id:"s12",layer:"standards",source:"OWASP Top 10 (2021)",title:"Broken access control is the #1 web application risk",topic:"RBAC",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2021-09",summary:"Access control failures outnumber injection in current data. Server-side enforcement and deny-by-default are baseline requirements."},
+      {id:"s13",layer:"standards",source:"RFC 7517 / JWK",title:"JWK key sets must validate key use and algorithm constraints",topic:"Tokens",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2015-05",summary:"Accepting any key from a JWKS endpoint without checking 'use' and 'alg' fields enables key confusion attacks."},
+      {id:"s14",layer:"standards",source:"NIST SP 800-53r5",title:"Least privilege must be enforced for all system accounts",topic:"IAM",relation:"Current Alignment",evidence:"A",life:"Current",date:"2020-09",summary:"Administrative access must be scoped and time-limited. Standing privileges create persistent attack surface."},
+      {id:"s15",layer:"standards",source:"RFC 7636 / PKCE",title:"Authorization code interception requires PKCE mitigation",topic:"OIDC",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2015-09",summary:"Public clients cannot protect client secrets. PKCE binds the authorization code to the requesting client."},
+      {id:"s16",layer:"standards",source:"OWASP API Security Top 10",title:"Object-level authorization must be checked on every request",topic:"API",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2023-06",summary:"BOLA is the most common API vulnerability. Resource identifiers must be validated against the authenticated caller's permissions."},
+      {id:"s17",layer:"standards",source:"RFC 9457 / Problem Details",title:"Error responses should not leak internal implementation details",topic:"API",relation:"Current Alignment",evidence:"A",life:"Current",date:"2023-07",summary:"Structured error responses help clients. Stack traces, SQL errors, and internal paths must be filtered from production responses."},
+      {id:"s18",layer:"standards",source:"NIST SP 800-190",title:"Container images must be scanned and signed before deployment",topic:"Containers",relation:"Normative Conflict",evidence:"A",life:"Current",date:"2017-09",summary:"Unsigned or unscanned images bypass supply chain controls. Admission policies should enforce image provenance."},
+
+      // === ARCHITECTURE (a1-a18) ===
+      {id:"a1",layer:"architecture",source:"AWS CloudTrail User Guide",title:"CloudTrail console and IaC paths create different trail scope",topic:"Logging",relation:"Console/API/IaC Divergence",evidence:"B",life:"Current",date:"2022-06",summary:"Console-created trails can differ from CLI, API, CloudFormation, or CDK trails unless multi-region scope is explicit."},
       {id:"a2",layer:"architecture",source:"AWS Security Reference Architecture",title:"IAM Identity Center is the centralized workforce access pattern",topic:"IAM",relation:"Current Alignment",evidence:"B",life:"Current",date:"2023-02",summary:"Architecture guidance aligns with federation and temporary credentials. Drift remains where legacy user-key tutorials stay visible."},
+      {id:"a3",layer:"architecture",source:"AWS Well-Architected / Networking",title:"VPC flow logs should be enabled for all production VPCs",topic:"VPC",relation:"Current Alignment",evidence:"B",life:"Current",date:"2023-04",summary:"Flow logs provide network-level visibility. Without them, lateral movement and data exfiltration lack detection signals."},
       {id:"a4",layer:"architecture",source:"AWS Well-Architected / EC2 docs",title:"IMDSv2 should be required on EC2 instances",topic:"IAM",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-10",summary:"IMDSv1 allows SSRF-to-metadata credential theft. Launch paths should explicitly require session-oriented metadata access."},
-      {id:"d1",layer:"docs",source:"API Gateway Developer Guide",title:"CORS wildcard examples are unsafe for credentialed browser APIs",topic:"CORS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-08",summary:"Docs allow wildcard CORS, which is valid for public data but unsafe when cookies, client certs, or auth headers are used."},
+      {id:"a5",layer:"architecture",source:"AWS EKS Best Practices Guide",title:"Pod security standards should replace PodSecurityPolicy",topic:"EKS",relation:"Guidance Drift",evidence:"B",life:"Current",date:"2023-08",summary:"PSP is removed in K8s 1.25. Migration to Pod Security Admission or policy engines is required for enforcement."},
+      {id:"a6",layer:"architecture",source:"AWS Well-Architected / S3",title:"S3 Block Public Access should be enabled at account level",topic:"S3",relation:"Current Alignment",evidence:"B",life:"Current",date:"2023-06",summary:"Account-level BPA prevents accidental public bucket creation. Bucket-level overrides should require explicit exception process."},
+      {id:"a7",layer:"architecture",source:"AWS Security Hub docs",title:"Security Hub standards should be enabled in all regions",topic:"Config",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-09",summary:"Security Hub is regional. Findings from unused regions can be missed without multi-region enablement."},
+      {id:"a8",layer:"architecture",source:"AWS KMS Developer Guide",title:"KMS key deletion permissions should be restricted to specific roles",topic:"KMS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-05",summary:"Accidental key deletion causes irreversible data loss. Restrict ScheduleKeyDeletion to specific roles and use the mandatory 7-30 day waiting period."},
+      {id:"a9",layer:"architecture",source:"AWS Lambda / VPC",title:"Lambda in VPC requires NAT gateway for internet access",topic:"Lambda",relation:"Console/API/IaC Divergence",evidence:"B",life:"Current",date:"2023-03",summary:"VPC Lambda functions lose internet access without NAT. Console does not warn about this dependency during configuration."},
+      {id:"a10",layer:"architecture",source:"AWS CloudFront / WAF",title:"WAF rules should be attached to all public-facing distributions",topic:"WAF",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-07",summary:"CloudFront distributions without WAF expose origin servers to unfiltered traffic. Default creation flow does not require WAF."},
+      {id:"a11",layer:"architecture",source:"AWS Organizations / SCPs",title:"Service control policies should deny root user access in member accounts",topic:"IAM",relation:"Current Alignment",evidence:"B",life:"Current",date:"2023-01",summary:"SCPs provide guardrails across the organization. Root user actions in member accounts bypass IAM policies but respect SCPs."},
+      {id:"a12",layer:"architecture",source:"AWS GuardDuty docs",title:"GuardDuty should be enabled in all accounts and regions",topic:"Logging",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-11",summary:"GuardDuty threat detection requires explicit enablement per account and region. Gaps create blind spots for compromise detection."},
+      {id:"a13",layer:"architecture",source:"AWS Step Functions / IAM",title:"Step Functions execution roles should be scoped to specific state machines",topic:"StepFn",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-09",summary:"Shared execution roles across state machines violate least privilege. Each workflow should have a dedicated role."},
+      {id:"a14",layer:"architecture",source:"AWS DynamoDB / Encryption",title:"DynamoDB encryption at rest uses AWS-owned keys by default",topic:"DynamoDB",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-04",summary:"AWS-owned keys prevent customer audit of key usage. CMK encryption provides audit trail and rotation control."},
+      {id:"a15",layer:"architecture",source:"AWS Cognito / Architecture",title:"Cognito user pool should enable threat protection",topic:"Cognito",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-10",summary:"Threat protection (formerly advanced security features) including adaptive authentication and compromised credential detection is opt-in. Default pools lack brute-force and credential-stuffing protection."},
+      {id:"a16",layer:"architecture",source:"AWS Well-Architected / SNS",title:"SNS topics should enforce encryption and access policies",topic:"SNS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-06",summary:"SNS topics created without resource policies can allow cross-account publish. Server-side encryption should be enabled for sensitive messages."},
+      {id:"a17",layer:"architecture",source:"AWS ECR / Image Scanning",title:"ECR image scanning should be enabled on push for all repositories",topic:"ECR",relation:"Current Alignment",evidence:"B",life:"Current",date:"2024-01",summary:"Scan-on-push catches known CVEs before deployment. Enhanced scanning with Inspector provides continuous monitoring."},
+      {id:"a18",layer:"architecture",source:"AWS SQS / Security",title:"SQS default SSE-SQS encryption lacks customer key audit and rotation control",topic:"SQS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-08",summary:"SQS queues use SSE-SQS encryption by default since October 2022. For sensitive data requiring audit trail and key rotation control, SSE-KMS with customer-managed keys should be used."},
+
+      // === OFFICIAL DOCS (d1-d18) ===
+      {id:"d1",layer:"docs",source:"API Gateway Developer Guide",title:"CORS wildcard examples omit credentialed-endpoint restrictions",topic:"CORS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-08",summary:"Docs show wildcard CORS as the default example. Browsers reject wildcard origin with credentials, but the doc does not warn on the same page."},
       {id:"d2",layer:"docs",source:"Amazon Cognito Developer Guide",title:"Refresh tokens can be configured for long lifetimes",topic:"Session",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-11",summary:"Long token windows are supported configuration, not a recommendation. Threat model and rotation rules need to be explicit."},
       {id:"d3",layer:"docs",source:"CloudFront Developer Guide",title:"Managed security headers policy is opt-in and omits CSP",topic:"Headers",relation:"Editorial Omission",evidence:"B",life:"Current",date:"2023-05",summary:"Managed policies provide a baseline but must be attached to cache behavior and augmented for CSP and permissions policy."},
       {id:"d4",layer:"docs",source:"Elastic Load Balancing docs",title:"Legacy TLS policies remain selectable as compatibility options",topic:"TLS",relation:"Legacy Compatibility Exposure",evidence:"B",life:"Current",date:"2023-04",summary:"The docs are accurate, but selectable legacy policies can drift from current TLS baselines if copied into new systems."},
+      {id:"d5",layer:"docs",source:"Lambda Developer Guide",title:"Default Lambda timeout of 3 seconds may cause silent failures",topic:"Lambda",relation:"Editorial Omission",evidence:"B",life:"Current",date:"2023-09",summary:"Short default timeout is not a security issue, but silent failure can mask security-relevant processing like token validation."},
+      {id:"d6",layer:"docs",source:"S3 User Guide",title:"S3 ACLs are disabled by default but still documented as a configurable option",topic:"S3",relation:"Legacy Compatibility Exposure",evidence:"B",life:"Current",date:"2023-07",summary:"ACLs are off by default (Object Ownership: bucket-owner-enforced). Re-enabling ACLs is still documented and possible, creating drift when older patterns are copied."},
+      {id:"d7",layer:"docs",source:"RDS User Guide",title:"RDS master password can be stored in Secrets Manager optionally",topic:"Secrets",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-10",summary:"Console allows plaintext password entry without Secrets Manager integration. Production databases should use managed rotation."},
+      {id:"d8",layer:"docs",source:"IAM User Guide",title:"Long-lived access keys remain a documented option despite temporary credentials being preferred",topic:"IAM",relation:"Editorial Omission",evidence:"B",life:"Current",date:"2023-06",summary:"Access key docs include rotation guidance but access keys remain a first-class option. Temporary credentials via IAM roles are the recommended pattern."},
+      {id:"d9",layer:"docs",source:"DynamoDB Developer Guide",title:"DynamoDB Streams inherit table encryption but key changes require re-creation",topic:"DynamoDB",relation:"Editorial Omission",evidence:"B",life:"Current",date:"2023-11",summary:"Streams inherit the table's encryption key (including CMK). Changing the encryption key on a table does not retroactively re-encrypt existing stream records."},
+      {id:"d10",layer:"docs",source:"EKS User Guide",title:"EKS cluster endpoint can be public by default",topic:"EKS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-08",summary:"Public API endpoints expose the control plane to the internet. Private endpoint access should be the production default."},
+      {id:"d11",layer:"docs",source:"CloudWatch Logs docs",title:"Log group retention defaults to never expire",topic:"Logging",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-05",summary:"Unlimited retention increases storage costs and may violate data retention policies. Explicit retention periods should be set."},
+      {id:"d12",layer:"docs",source:"SNS Developer Guide",title:"SNS HTTPS subscriptions require CA-signed certificates but confirmation flow can be spoofed",topic:"SNS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-09",summary:"SNS validates CA-signed certificates by default. However, the subscription confirmation token can be intercepted if the HTTPS endpoint is compromised, granting persistent message delivery."},
+      {id:"d13",layer:"docs",source:"SES Developer Guide",title:"SES sending authorization requires explicit identity policies",topic:"Config",relation:"Editorial Omission",evidence:"B",life:"Current",date:"2023-07",summary:"Cross-account SES sending requires identity-based and resource-based policy alignment. Missing policies cause silent failures."},
+      {id:"d14",layer:"docs",source:"AWS WAF Developer Guide",title:"WAF rate-based rules had a minimum threshold of 100 requests per 5-minute window",topic:"WAF",relation:"Doc/Product Mismatch",evidence:"B",life:"Current",date:"2023-10",summary:"The minimum rate limit of 100 requests (lowered to 10 in August 2024) may be too coarse for targeted endpoints. Additional mitigation layers may be needed."},
+      {id:"d15",layer:"docs",source:"Route 53 Developer Guide",title:"DNSSEC signing is opt-in per hosted zone",topic:"DNS",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-04",summary:"DNS responses are unsigned by default. DNSSEC prevents cache poisoning but requires careful key rotation management."},
+      {id:"d16",layer:"docs",source:"AWS Config Rules Guide",title:"Config rules evaluate but do not auto-remediate by default",topic:"Config",relation:"Editorial Omission",evidence:"B",life:"Current",date:"2023-08",summary:"Evaluation without remediation creates alert fatigue. Auto-remediation requires explicit SSM Automation document configuration."},
+      {id:"d17",layer:"docs",source:"API Gateway docs / Authorizers",title:"Lambda authorizer caching can serve stale auth decisions",topic:"API",relation:"Unsafe Default",evidence:"B",life:"Current",date:"2023-11",summary:"Cached authorizer responses persist for the TTL period. Token revocation during cache window is not reflected."},
+      {id:"d18",layer:"docs",source:"Secrets Manager docs",title:"Secrets Manager rotation for non-managed secrets requires Lambda function configuration",topic:"Secrets",relation:"Editorial Omission",evidence:"B",life:"Current",date:"2023-06",summary:"RDS-managed passwords rotate automatically, but custom secrets require explicit Lambda rotation function configuration or they remain static indefinitely."},
+
+      // === SAMPLES (p1-p18) ===
       {id:"p1",layer:"samples",source:"aws-samples / serverless snippets",title:"Sample Lambda roles often exceed least-privilege scope",topic:"IAM",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2023-11",summary:"Convenience permissions in sample code can propagate into production templates when copied without review."},
       {id:"p2",layer:"samples",source:"Container app examples",title:"Docker examples frequently omit non-root runtime user",topic:"Docker",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2024-01",summary:"A Dockerfile without a USER instruction runs as root by default. Task definitions should also lock down writable filesystems."},
       {id:"p3",layer:"samples",source:"React auth examples",title:"dangerouslySetInnerHTML examples need sanitizer boundaries",topic:"React",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2023-07",summary:"Framework escape hatches bypass default XSS protection. Rich HTML from users needs strict sanitizer allowlists."},
+      {id:"p4",layer:"samples",source:"CDK construct library examples",title:"CDK examples use wildcard resource ARNs in IAM policies",topic:"IAM",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2023-12",summary:"Resource: '*' in sample IAM policies grants access to all resources. Production policies must scope to specific ARNs."},
+      {id:"p5",layer:"samples",source:"EKS workshop materials",title:"Workshop RBAC examples bind cluster-admin to default service account",topic:"K8s",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2023-10",summary:"cluster-admin ClusterRoleBinding in samples creates privilege escalation paths. Workshop cleanup steps often miss RBAC rollback."},
+      {id:"p6",layer:"samples",source:"Terraform module examples",title:"Terraform S3 backend examples omit state locking configuration",topic:"Terraform",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2023-09",summary:"Without DynamoDB state locking, concurrent applies can corrupt state. Sample backends should include lock table configuration."},
+      {id:"p7",layer:"samples",source:"AWS SDK examples / Python",title:"SDK examples catch broad exceptions, risking sensitive data in error output",topic:"Secrets",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2023-08",summary:"Broad except-all handlers in sample code can expose request metadata containing sensitive data when exceptions are logged."},
+      {id:"p8",layer:"samples",source:"CloudFormation sample templates",title:"CFN templates use hardcoded CIDR blocks for security groups",topic:"Network",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2023-11",summary:"Hardcoded 0.0.0.0/0 ingress rules in sample templates create open security groups when deployed without modification."},
+      {id:"p9",layer:"samples",source:"API Gateway + Lambda examples",title:"Sample API endpoints lack request validation",topic:"Input",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2024-01",summary:"Sample APIs accept any request body without schema validation. API Gateway request validators should be configured."},
+      {id:"p10",layer:"samples",source:"Cognito integration examples",title:"Cognito sample apps store tokens in localStorage",topic:"Cognito",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2023-10",summary:"localStorage is accessible to XSS. Tokens should use httpOnly cookies or in-memory storage with refresh token rotation."},
+      {id:"p11",layer:"samples",source:"Step Functions examples",title:"Step Functions sample workflows pass full event payload between states",topic:"StepFn",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2023-07",summary:"Passing entire payloads increases state size and may expose sensitive data in execution history. Use InputPath/ResultPath filtering."},
+      {id:"p12",layer:"samples",source:"DynamoDB sample applications",title:"DynamoDB samples use Scan instead of Query for filtered reads",topic:"DynamoDB",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2023-12",summary:"Full table scans are expensive and can expose data across partition boundaries. Samples should demonstrate Query with key conditions."},
+      {id:"p13",layer:"samples",source:"VPC CloudFormation examples",title:"VPC sample templates rely on default allow-all network ACLs",topic:"VPC",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2023-09",summary:"Subnets always have a NACL, but samples use the default which allows all traffic. Production templates should define explicit NACL rules."},
+      {id:"p14",layer:"samples",source:"CI/CD pipeline examples",title:"CodePipeline examples use plaintext environment variables for secrets",topic:"CICD",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2024-02",summary:"CodeBuild PLAINTEXT env var type exposes values in build logs. Use PARAMETER_STORE or SECRETS_MANAGER types instead."},
+      {id:"p15",layer:"samples",source:"SQS consumer examples",title:"SQS consumer samples lack dead-letter queue configuration",topic:"SQS",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2023-08",summary:"Without DLQ, failed messages are retried indefinitely or silently dropped. Samples should include redrive policy configuration."},
+      {id:"p16",layer:"samples",source:"KMS encryption examples",title:"KMS sample code uses default key policy allowing root account full access",topic:"KMS",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2023-11",summary:"Default key policy grants root account unrestricted access. Production keys should specify explicit key administrators and users."},
+      {id:"p17",layer:"samples",source:"CloudFront + S3 examples",title:"CloudFront sample origins use S3 website endpoint without OAC",topic:"CloudFront",relation:"Sample-Code Defect",evidence:"B",life:"Current",date:"2024-01",summary:"S3 website endpoints cannot use OAC. Samples should use S3 REST endpoints with OAC to prevent direct bucket access."},
+      {id:"p18",layer:"samples",source:"EventBridge rule examples",title:"EventBridge samples use overly broad event patterns",topic:"Config",relation:"Sample-Code Defect",evidence:"C",life:"Current",date:"2023-10",summary:"Broad event patterns trigger on unintended events. Production rules should match on specific source, detail-type, and detail fields."},
+
+      // === COMMUNITY (c1-c16) ===
       {id:"c1",layer:"community",source:"IAM change trackers",title:"Community trackers catch permission changes before docs settle",topic:"IAM",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-01",summary:"Trackers are not authority, but they surface changes that need confirmation against official service behavior."},
-      {id:"c2",layer:"community",source:"Breaking-change reports",title:"Observed TLS defaults differ by provisioning path",topic:"TLS",relation:"Console/API/IaC Divergence",evidence:"C",life:"Current",date:"2025-09",summary:"Console defaults can be stronger than CLI or IaC defaults. Production templates should set policy values explicitly."},
+      {id:"c2",layer:"community",source:"Breaking-change reports",title:"Observed TLS defaults differ by provisioning path",topic:"TLS",relation:"Console/API/IaC Divergence",evidence:"C",life:"Current",date:"2024-11",summary:"Console defaults can be stronger than CLI or IaC defaults. Production templates should set policy values explicitly."},
+      {id:"c3",layer:"community",source:"GitHub security advisories",title:"Community reports surface zero-day patterns before vendor patches",topic:"Containers",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-03",summary:"Advisory databases aggregate community vulnerability reports. Dependency scanning should monitor multiple advisory sources."},
+      {id:"c4",layer:"community",source:"Cloud security blog posts",title:"S3 bucket enumeration tools document public bucket discovery techniques",topic:"S3",relation:"Ecosystem Observation",evidence:"D",life:"Current",date:"2023-11",summary:"Bucket naming patterns are predictable. Account-level BPA and bucket policies are more reliable than obscurity."},
+      {id:"c5",layer:"community",source:"Kubernetes security mailing lists",title:"RBAC misconfigurations are the most reported K8s security issue",topic:"K8s",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-02",summary:"Community reports consistently highlight overprivileged service accounts and missing network policies."},
+      {id:"c6",layer:"community",source:"AWS re:Post discussions",title:"Cross-account role assumption chains create transitive trust",topic:"IAM",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-01",summary:"Role chaining across accounts can create unintended access paths. Trust policies should use explicit condition keys."},
+      {id:"c7",layer:"community",source:"Terraform provider changelogs",title:"Provider updates change default security configurations",topic:"Terraform",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-03",summary:"Major provider version bumps can change default values for encryption, public access, and logging. Pin versions and review changelogs."},
+      {id:"c8",layer:"community",source:"Container security scanners",title:"Base image vulnerability counts vary significantly between scanners",topic:"Docker",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-02",summary:"Scanner databases and detection methods differ. Cross-referencing multiple scanners provides more complete coverage."},
+      {id:"c9",layer:"community",source:"Security conference presentations",title:"SSRF to cloud metadata is a recurring attack pattern",topic:"IAM",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-01",summary:"SSRF attacks targeting metadata services continue despite IMDSv2. Application-level SSRF prevention is still necessary."},
+      {id:"c10",layer:"community",source:"Bug bounty reports",title:"API rate limiting bypasses via header manipulation documented",topic:"API",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-03",summary:"X-Forwarded-For and similar headers can bypass IP-based rate limiting. Rate limits should use authenticated identity where possible."},
+      {id:"c11",layer:"community",source:"Open-source SAST tools",title:"Community SAST rules detect patterns missed by commercial tools",topic:"Input",relation:"Ecosystem Observation",evidence:"D",life:"Current",date:"2024-02",summary:"Semgrep and similar tools have community-contributed rules for framework-specific vulnerabilities."},
+      {id:"c12",layer:"community",source:"DNS monitoring projects",title:"Subdomain takeover monitoring reveals dangling DNS records",topic:"DNS",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-01",summary:"Dangling CNAME records for decommissioned services can be claimed by attackers. DNS hygiene requires lifecycle management."},
+      {id:"c13",layer:"community",source:"AWS community tools",title:"Prowler findings reveal gaps between documented and actual security posture",topic:"Config",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-02",summary:"Open-source audit tools often check controls not covered by AWS-managed config rules. Multiple audit sources improve coverage."},
+      {id:"c14",layer:"community",source:"OIDC implementation blogs",title:"OIDC token validation libraries have inconsistent claim verification",topic:"OIDC",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-03",summary:"Libraries differ on which claims are validated by default. Audience, issuer, and expiry should be explicitly checked."},
+      {id:"c15",layer:"community",source:"MFA bypass research",title:"Push notification fatigue attacks bypass MFA approval",topic:"MFA",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-01",summary:"Repeated push notifications can trick users into approving malicious requests. Number matching and rate limiting reduce risk."},
+      {id:"c16",layer:"community",source:"Cloud storage audit tools",title:"Versioned S3 objects remain accessible after deletion to any principal with read permissions",topic:"Storage",relation:"Guidance Drift",evidence:"D",life:"Current",date:"2024-02",summary:"Delete operations on versioned buckets insert delete markers but preserve previous versions. Anyone with s3:GetObjectVersion can read 'deleted' data."},
+
+      // === SEO / TUTORIALS / AI (e1-e16) ===
       {id:"e1",layer:"seo",source:"JWT tutorials",title:"JWT tutorials use weak shared secrets or hardcoded signing keys",topic:"Auth",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-09",summary:"Copied auth snippets often skip key management and rotation. Review generated or tutorial code against current auth guidance."},
       {id:"e2",layer:"seo",source:"Terraform tutorials",title:"Local Terraform state exposes secrets when committed",topic:"Secrets",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-06",summary:"Default local state is plaintext JSON. Use remote state with access controls and keep state files out of source control."},
       {id:"e3",layer:"seo",source:"API Gateway quickstarts",title:"Quickstarts omit throttling and usage plans",topic:"Auth",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2024-02",summary:"Unauthenticated or authenticated callers can consume backend resources unless stage throttles, usage plans, and rate rules are configured."},
-      {id:"e4",layer:"seo",source:"RDS quickstarts",title:"Public database examples reduce defense-in-depth",topic:"RDS",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2024-02",summary:"Publicly reachable databases still need auth and network rules, but private subnet placement is the safer production baseline."}
+      {id:"e4",layer:"seo",source:"RDS quickstarts",title:"Public database examples reduce defense-in-depth",topic:"RDS",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2024-02",summary:"Publicly reachable databases still need auth and network rules, but private subnet placement is the safer production baseline."},
+      {id:"e5",layer:"seo",source:"AI-generated IaC",title:"AI code assistants generate security groups with 0.0.0.0/0 ingress",topic:"Network",relation:"Ecosystem Observation",evidence:"C",life:"Current",date:"2024-03",summary:"LLM-generated infrastructure code often uses permissive defaults. Security review must cover AI-generated configurations."},
+      {id:"e6",layer:"seo",source:"YouTube DevOps tutorials",title:"Tutorials store AWS credentials as GitHub Actions secrets without OIDC",topic:"CICD",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-12",summary:"Static credentials in CI/CD are unnecessary with OIDC federation. GitHub Actions can assume roles without long-lived keys."},
+      {id:"e7",layer:"seo",source:"Stack Overflow answers",title:"Top-voted answers recommend disabling SSL verification for development",topic:"TLS",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-08",summary:"VERIFY_NONE and --insecure flags in accepted answers get copied to production. Development convenience should not compromise production security."},
+      {id:"e8",layer:"seo",source:"Medium / dev.to blog posts",title:"CORS tutorials recommend Access-Control-Allow-Origin: * as first solution",topic:"CORS",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-10",summary:"Wildcard origin is the most commonly recommended CORS fix. Tutorials rarely distinguish between public and credentialed endpoints."},
+      {id:"e9",layer:"seo",source:"Docker Hub public images",title:"Popular Docker images run as root and include unnecessary packages",topic:"Docker",relation:"Ecosystem Observation",evidence:"C",life:"Current",date:"2024-01",summary:"Base images with unnecessary packages increase attack surface. Distroless or minimal images with non-root users are preferred."},
+      {id:"e10",layer:"seo",source:"AI chatbot code generation",title:"AI-generated code omits input validation and parameterized queries",topic:"Input",relation:"Ecosystem Observation",evidence:"C",life:"Current",date:"2024-03",summary:"Generated database queries often use string concatenation. AI output needs security review for injection vulnerabilities."},
+      {id:"e11",layer:"seo",source:"Node.js tutorial sites",title:"Express.js tutorials omit helmet, rate limiting, and CSRF protection",topic:"Headers",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-11",summary:"Minimal Express setups in tutorials lack security middleware. Production apps need explicit security header and rate limit configuration."},
+      {id:"e12",layer:"seo",source:"Kubernetes tutorial blogs",title:"K8s tutorials use kubectl apply with cluster-admin context",topic:"K8s",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2024-01",summary:"Tutorial kubectl commands assume cluster-admin. Production access should use scoped RBAC and namespace-limited contexts."},
+      {id:"e13",layer:"seo",source:"OAuth tutorial sites",title:"OAuth tutorials skip state parameter and PKCE implementation",topic:"OIDC",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-09",summary:"Missing state parameter enables CSRF on OAuth flows. PKCE is required for public clients and recommended for all."},
+      {id:"e14",layer:"seo",source:"AWS workshop clones",title:"Forked workshop repos contain outdated IAM policies with known issues",topic:"IAM",relation:"Ecosystem Observation",evidence:"C",life:"Current",date:"2024-02",summary:"Workshop forks diverge from maintained originals. Outdated policies in forks propagate known security issues."},
+      {id:"e15",layer:"seo",source:"Crypto implementation blogs",title:"Blog posts implement custom encryption instead of using AWS KMS",topic:"Crypto",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2023-10",summary:"Custom cryptography in application code is error-prone. Managed key services provide audited, standards-compliant encryption."},
+      {id:"e16",layer:"seo",source:"Serverless framework tutorials",title:"Serverless tutorials use broad IAM permissions with iamRoleStatements",topic:"Lambda",relation:"Ecosystem Observation",evidence:"B",life:"Current",date:"2024-01",summary:"Framework tutorials often grant lambda:* or s3:* permissions for simplicity. Production functions need scoped resource policies."}
     ];
 
     const state = {
@@ -260,18 +355,18 @@
       const decisions = f.filter(e => e.relation !== "Current Alignment").length;
       const topics = new Set(f.map(e => e.topic)).size;
       $("metrics").innerHTML = [
-        ["Visible Records", f.length, "of " + events.length, "#f2ead8"],
-        ["Verified", verified, "A/B evidence", "#b8e62f"],
-        ["Load-bearing", decisions, "non-aligned", "#f27863"],
-        ["Topics", topics, "active filters", "#6a35e8"]
-      ].map(x => `<div class="tile"><div class="mini">${x[0]}</div><div class="num" style="color:${x[3]}">${x[1]}</div><div class="mini">${x[2]}</div></div>`).join("");
+        ["Visible Records", f.length, "of " + events.length, "#22d3ee"],
+        ["Verified", verified, "A/B evidence", "#22c55e"],
+        ["Load-bearing", decisions, "non-aligned", "#f97316"],
+        ["Topics", topics, "active filters", "#a78bfa"]
+      ].map(x => `<div class="tile" style="--tile-accent:${x[3]}"><div class="mini">${x[0]}</div><div class="num" style="color:${x[3]}">${x[1]}</div><div class="mini">${x[2]}</div></div>`).join("");
       const total = Math.max(1, f.length);
       $("layerTotal").textContent = f.length + " visible";
       $("relTotal").textContent = new Set(f.map(e => e.relation)).size + " types";
       bars("layerBars", countsBy(layers.map(l => l[0]), "layer"), total, k => layer(k)[3], k => layer(k)[1]);
       bars("relBars", countsBy(Object.keys(relColors), "relation").filter(x => x.n), total, k => relColors[k], k => k);
       const verifyRows = ["Verified","Narrower","Needs Archive","Unverified"].map(k => ({key:k, n:f.filter(e => status(e) === k).length})).filter(x => x.n);
-      bars("verifyBars", verifyRows, total, k => ({Verified:"#b8e62f",Narrower:"#d6bb45","Needs Archive":"#6a35e8",Unverified:"#a59d8b"}[k]), k => k);
+      bars("verifyBars", verifyRows, total, k => ({Verified:"#22c55e",Narrower:"#eab308","Needs Archive":"#60a5fa",Unverified:"#71717a"}[k]), k => k);
       $("feed").innerHTML = f.map(e => card(e)).join("") || `<div class="card"><div class="summary">No records match the active filters.</div></div>`;
     }
     function card(e) {
@@ -280,12 +375,10 @@
         <div class="card-top">
           <span class="badge" style="--c:${l[3]}">${esc(l[1])}</span>
           <span class="badge" style="--c:${relColors[e.relation]}">${esc(e.relation)}</span>
-          <span class="badge" style="--c:${topicColors[e.topic]}">${e.topic}</span>
-          <span class="badge" style="--c:#b8e62f">${esc(status(e))}</span>
           <span class="date">${esc(e.date)}</span>
         </div>
         <div class="title">${esc(e.title)}</div>
-        <div class="source">${esc(e.id)} · ${esc(e.source)} · Evidence ${esc(e.evidence)}</div>
+        <div class="source">${esc(e.id)} · ${esc(e.source)} · Evidence ${esc(e.evidence)} · ${e.topic} · ${esc(status(e))}</div>
         <div class="summary">${esc(e.summary)}</div>
       </article>`;
     }
@@ -322,63 +415,195 @@
       render();
     });
     $("search").addEventListener("input", e => { state.q = e.target.value.trim().toLowerCase(); render(); });
-    function bootGL() {
-      const canvas = $("glfield");
-      const gl = canvas.getContext("webgl", {alpha:true, antialias:true});
-      if (!gl) return;
-      const vert = "attribute vec2 p;attribute vec3 c;varying vec3 v;void main(){gl_PointSize=5.0;gl_Position=vec4(p,0.0,1.0);v=c;}";
-      const frag = "precision lowp float;varying vec3 v;void main(){vec2 d=gl_PointCoord-0.5;float a=1.0-smoothstep(0.18,0.5,length(d));gl_FragColor=vec4(v,a*0.72);}";
-      function make(type, src) {
-        const s = gl.createShader(type);
-        gl.shaderSource(s, src);
-        gl.compileShader(s);
-        return s;
-      }
-      const prog = gl.createProgram();
-      gl.attachShader(prog, make(gl.VERTEX_SHADER, vert));
-      gl.attachShader(prog, make(gl.FRAGMENT_SHADER, frag));
-      gl.linkProgram(prog);
-      gl.useProgram(prog);
-      const pos = gl.getAttribLocation(prog, "p");
-      const col = gl.getAttribLocation(prog, "c");
-      const buf = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-      gl.enableVertexAttribArray(pos);
-      gl.enableVertexAttribArray(col);
-      gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 20, 0);
-      gl.vertexAttribPointer(col, 3, gl.FLOAT, false, 20, 8);
-      const pts = events.map((e, i) => {
-        const l = layers.find(x => x[0] === e.layer);
-        const hex = l[3].slice(1).match(/../g).map(x => parseInt(x, 16) / 255);
-        return {a:i * 0.53, r:.22 + (i % 7) * .085, c:hex};
-      });
-      function fit() {
-        const dpr = window.devicePixelRatio || 1;
-        const w = Math.max(320, canvas.clientWidth);
-        const h = Math.max(96, canvas.clientHeight);
-        canvas.width = Math.floor(w * dpr);
-        canvas.height = Math.floor(h * dpr);
-        gl.viewport(0, 0, canvas.width, canvas.height);
-      }
-      function draw(t) {
-        fit();
-        const data = [];
-        const k = t * 0.00035;
-        pts.forEach((pt, i) => {
-          const x = Math.cos(pt.a + k * (1 + i % 3)) * pt.r;
-          const y = Math.sin(pt.a * 1.7 - k * (1 + i % 5)) * pt.r * 0.7;
-          data.push(x, y, pt.c[0], pt.c[1], pt.c[2]);
-        });
-        gl.clearColor(0,0,0,0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.DYNAMIC_DRAW);
-        gl.drawArrays(gl.POINTS, 0, pts.length);
-        requestAnimationFrame(draw);
-      }
-      requestAnimationFrame(draw);
-    }
     render();
-    bootGL();
+
+    /* ── Maze-solving canvas animation ── */
+    function bootMaze() {
+      const canvas = $("maze");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const CELL = 14;
+      const layerColors = layers.map(l => l[3]);
+      let colorIdx = 0;
+      let animId = null;
+      let running = false;
+
+      function resize() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = Math.floor(rect.width * devicePixelRatio);
+        canvas.height = Math.floor(rect.height * devicePixelRatio);
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+      }
+
+      function generate(cols, rows) {
+        // grid[r][c] = {n,s,e,w} walls (true = wall exists)
+        const grid = Array.from({length: rows}, () =>
+          Array.from({length: cols}, () => ({n:true, s:true, e:true, w:true, visited:false}))
+        );
+        // Recursive backtracker
+        const stack = [];
+        const start = grid[0][0];
+        start.visited = true;
+        stack.push([0, 0]);
+        while (stack.length) {
+          const [r, c] = stack[stack.length - 1];
+          const neighbors = [];
+          if (r > 0 && !grid[r-1][c].visited) neighbors.push([r-1, c, 'n', 's']);
+          if (r < rows-1 && !grid[r+1][c].visited) neighbors.push([r+1, c, 's', 'n']);
+          if (c > 0 && !grid[r][c-1].visited) neighbors.push([r, c-1, 'w', 'e']);
+          if (c < cols-1 && !grid[r][c+1].visited) neighbors.push([r, c+1, 'e', 'w']);
+          if (!neighbors.length) { stack.pop(); continue; }
+          const [nr, nc, wall, opp] = neighbors[Math.floor(Math.random() * neighbors.length)];
+          grid[r][c][wall] = false;
+          grid[nr][nc][opp] = false;
+          grid[nr][nc].visited = true;
+          stack.push([nr, nc]);
+        }
+        return grid;
+      }
+
+      function drawWalls(grid, cols, rows, w, h) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.strokeStyle = "rgba(255,255,255,0.08)";
+        ctx.lineWidth = 1;
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const x = c * CELL, y = r * CELL;
+            if (grid[r][c].n) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + CELL, y); ctx.stroke(); }
+            if (grid[r][c].w) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + CELL); ctx.stroke(); }
+          }
+        }
+        // bottom and right borders
+        ctx.beginPath();
+        ctx.moveTo(0, rows * CELL);
+        ctx.lineTo(cols * CELL, rows * CELL);
+        ctx.moveTo(cols * CELL, 0);
+        ctx.lineTo(cols * CELL, rows * CELL);
+        ctx.stroke();
+      }
+
+      function fillCell(r, c, color, alpha) {
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha;
+        ctx.fillRect(c * CELL + 1, r * CELL + 1, CELL - 2, CELL - 2);
+        ctx.globalAlpha = 1;
+      }
+
+      function solveBFS(grid, cols, rows, w, h) {
+        const exploreColor = layerColors[colorIdx % layerColors.length];
+        colorIdx++;
+        const deadColor = "#f87171";
+        const solveColor = "#22c55e";
+
+        // BFS
+        const visited = Array.from({length: rows}, () => Array(cols).fill(false));
+        const parent = Array.from({length: rows}, () => Array(cols).fill(null));
+        const queue = [[0, 0]];
+        visited[0][0] = true;
+        const targetR = rows - 1, targetC = cols - 1;
+        let found = false;
+        let step = 0;
+        const exploredOrder = [];
+
+        // Pre-compute BFS
+        while (queue.length && !found) {
+          const [r, c] = queue.shift();
+          exploredOrder.push([r, c]);
+          if (r === targetR && c === targetC) { found = true; break; }
+          const dirs = [
+            [r-1, c, 'n'],
+            [r+1, c, 's'],
+            [c-1 >= 0 ? r : -1, c-1, 'w'],
+            [r, c+1, 'e']
+          ];
+          const moves = [];
+          if (!grid[r][c].n && r > 0 && !visited[r-1][c]) moves.push([r-1, c, 'n']);
+          if (!grid[r][c].s && r < rows-1 && !visited[r+1][c]) moves.push([r+1, c, 's']);
+          if (!grid[r][c].w && c > 0 && !visited[r][c-1]) moves.push([r, c-1, 'w']);
+          if (!grid[r][c].e && c < cols-1 && !visited[r][c+1]) moves.push([r, c+1, 'e']);
+          for (const [nr, nc] of moves) {
+            visited[nr][nc] = true;
+            parent[nr][nc] = [r, c];
+            queue.push([nr, nc]);
+          }
+        }
+
+        // Trace solution path
+        const path = [];
+        if (found) {
+          let cur = [targetR, targetC];
+          while (cur) { path.unshift(cur); cur = parent[cur[0]][cur[1]]; }
+        }
+        const pathSet = new Set(path.map(p => p[0] + "," + p[1]));
+
+        // Animate
+        let i = 0;
+        const STEP_MS = 18;
+        const BATCH = 3;
+
+        function tick() {
+          if (!running) return;
+          for (let b = 0; b < BATCH && i < exploredOrder.length; b++, i++) {
+            const [r, c] = exploredOrder[i];
+            fillCell(r, c, exploreColor, 0.15);
+          }
+          if (i < exploredOrder.length) {
+            animId = setTimeout(tick, STEP_MS);
+          } else {
+            // Show dead ends (explored but not on path)
+            for (const [r, c] of exploredOrder) {
+              if (!pathSet.has(r + "," + c)) fillCell(r, c, deadColor, 0.08);
+            }
+            // Draw solution path
+            let pi = 0;
+            function drawPath() {
+              if (!running) return;
+              if (pi < path.length) {
+                const [r, c] = path[pi];
+                fillCell(r, c, solveColor, 0.4);
+                pi++;
+                animId = setTimeout(drawPath, 12);
+              } else {
+                // Pause then restart
+                animId = setTimeout(cycle, 1200);
+              }
+            }
+            drawPath();
+          }
+        }
+        tick();
+      }
+
+      function cycle() {
+        if (!running) return;
+        resize();
+        const rect = canvas.getBoundingClientRect();
+        const w = rect.width, h = rect.height;
+        const cols = Math.floor(w / CELL);
+        const rows = Math.floor(h / CELL);
+        if (cols < 2 || rows < 2) return;
+        const grid = generate(cols, rows);
+        drawWalls(grid, cols, rows, w, h);
+        solveBFS(grid, cols, rows, w, h);
+      }
+
+      function start() {
+        running = true;
+        cycle();
+      }
+
+      function stop() {
+        running = false;
+        if (animId) { clearTimeout(animId); animId = null; }
+      }
+
+      // Handle resize
+      const ro = new ResizeObserver(() => { stop(); start(); });
+      ro.observe(canvas);
+
+      start();
+    }
+    bootMaze();
   </script>
 </body>
 </html>

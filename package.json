@@ -1,0 +1,24 @@
+{
+  "name": "defcon34",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "npx serve -l 8000 .",
+    "build": "node scripts/build-deck.mjs",
+    "export": "node scripts/run-export.mjs",
+    "test": "node --test tests/deck.test.mjs && npm run test:e2e",
+    "test:static": "node --test tests/deck.test.mjs",
+    "test:e2e": "node scripts/run-playwright.mjs test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

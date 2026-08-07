@@ -1,0 +1,8 @@
+node_modules/
+.tmp-fonts/
+.tmp-playwright.config.mjs
+test-results/
+dashboard/dist/
+dashboard/src/.observablehq/cache
+dashboard/.observablehq/
+*.Zone.Identifier

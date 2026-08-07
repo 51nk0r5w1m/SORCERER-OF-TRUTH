@@ -1,5 +1,5 @@
 export default {
-  title: "Sorcerer of Truth: UAP Pipeline Observatory",
+  title: "UAP PIPELINE OBSERVATORY",
   root: "src",
   output: "dist",
   theme: ["dark", "dashboard"],
@@ -9,5 +9,5 @@ export default {
     {name: "Evidence Registry", path: "/registry"},
     {name: "Methodology", path: "/methodology"}
   ],
-  footer: "Sorcerer of Truth · UAP Pipeline Observatory · Evidence changes decisions."
+  footer: "UAP PIPELINE OBSERVATORY · Evidence changes decisions."
 };

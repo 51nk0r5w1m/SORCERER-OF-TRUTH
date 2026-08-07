@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/51nk0r5w1m/talks/defcon34/**)",
+      "Read(///wsl.localhost/Ubuntu/home/51nk0r5w1m/talks/defcon34/**)",
+      "Bash(ls \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\51nk0r5w1m\\\\talks\\\\defcon34\\\\IMAGES\")",
+      "Bash(cd \"\\\\\\\\wsl.localhost\\\\Ubuntu\\\\home\\\\51nk0r5w1m\\\\talks\\\\defcon34\")",
+      "Bash(npm run *)",
+      "Bash(wsl -d Ubuntu -- bash -c \"cd /home/51nk0r5w1m/talks/defcon34 && npm run build 2>&1 | tail -20\")",
+      "Bash(wsl -d Ubuntu -- bash -c \"cd /home/51nk0r5w1m/talks/defcon34 && grep -n 'closing\\\\|ending\\\\|final\\\\|slide.*20\\\\|CLOSING\\\\|thank' scripts/build-deck.mjs | head -30\")",
+      "Bash(wsl -d Ubuntu -- bash -c \"cd /home/51nk0r5w1m/talks/defcon34 && npm run build 2>&1 | tail -10\")",
+      "Bash(wsl -d Ubuntu -- ls -la /home/51nk0r5w1m/talks/defcon34/)",
+      "Bash(wsl -d Ubuntu -- bash -c \"ls -la /home/51nk0r5w1m/talks/defcon34/ | head -40 && echo '---assets subdirs---' && ls /home/51nk0r5w1m/talks/defcon34/assets 2>/dev/null || echo 'no assets/ folder' && echo '---build---' && du -sh /home/51nk0r5w1m/talks/defcon34/build/* 2>/dev/null | sort -h\")",
+      "Bash(wsl -d Ubuntu -- bash -c \"cd /home/51nk0r5w1m/talks/defcon34 && npm run build 2>&1 | tail -6 && echo '---' && ls -la 714ae8b1*.png 2>/dev/null | head -3\")",
+      "Bash(wsl -d Ubuntu -- bash -c \"cd /home/51nk0r5w1m/talks/defcon34 && npm run build 2>&1 | tail -5\")"
+    ]
+  }
+}

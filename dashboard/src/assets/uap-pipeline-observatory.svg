@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 450" width="100%" height="100%">
+  <defs>
+    <!-- Brutalist Grid Overlay -->
+    <pattern id="brutalist-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#27272a" stroke-width="1"/>
+      <circle cx="40" cy="40" r="1.5" fill="#3f3f46"/>
+    </pattern>
+
+    <!-- Diagonal Warning Barcode / Hazard Lines -->
+    <pattern id="hazard-lines" width="20" height="20" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="20" stroke="#ef4444" stroke-width="8" stroke-dasharray="10 10"/>
+    </pattern>
+    
+    <!-- Heavy Duty Glow / Blur -->
+    <filter id="bloom" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Void & Grid -->
+  <rect width="1200" height="450" fill="#030308"/>
+  <rect width="1200" height="450" fill="url(#brutalist-grid)"/>
+
+  <!-- Top / Bottom Hard Borders -->
+  <line x1="0" y1="2" x2="1200" y2="2" stroke="#ffffff" stroke-width="4"/>
+  <line x1="0" y1="448" x2="1200" y2="448" stroke="#ef4444" stroke-width="4"/>
+
+  <!-- Left Corner Architectural framing -->
+  <path d="M 0 0 L 40 0 L 40 40 L 0 40 Z" fill="#ef4444"/>
+  <path d="M 1160 410 L 1200 410 L 1200 450 L 1160 450 Z" fill="#ffffff"/>
+
+  <!-- SICK DESIGNER "X" BRUTALIST MARK -->
+  <g transform="translate(100, 225)">
+    <!-- The X -->
+    <line x1="-60" y1="-120" x2="60" y2="120" stroke="#18181b" stroke-width="40"/>
+    <line x1="60" y1="-120" x2="-60" y2="120" stroke="#18181b" stroke-width="40"/>
+    
+    <!-- Red Accent Cut -->
+    <line x1="60" y1="-120" x2="-60" y2="120" stroke="#ef4444" stroke-width="8" stroke-dasharray="40 10" filter="url(#bloom)"/>
+    
+    <!-- Center Lock -->
+    <rect x="-15" y="-15" width="30" height="30" fill="#030308" stroke="#ffffff" stroke-width="4" transform="rotate(45)"/>
+    <circle cx="0" cy="0" r="4" fill="#ef4444"/>
+    
+    <text x="-90" y="-120" font-family="'Space Mono', monospace" font-size="14" fill="#52525b" font-weight="700" letter-spacing="4">SYS.01</text>
+    <text x="50" y="140" font-family="'Space Mono', monospace" font-size="14" fill="#ef4444" font-weight="700" letter-spacing="4">OVR/RDE</text>
+  </g>
+
+  <!-- MASSIVE TYPOGRAPHY -->
+  <g transform="translate(240, 250)">
+    <!-- Shadow / Glitch Effect layer -->
+    <text x="6" y="-34" font-family="'Space Mono', Helvetica, sans-serif" font-size="94" fill="none" stroke="#27272a" stroke-width="2" font-weight="900" letter-spacing="-4">UAP</text>
+    
+    <!-- Main Text -->
+    <text x="0" y="-40" font-family="'Space Mono', Helvetica, sans-serif" font-size="94" fill="#ffffff" font-weight="900" letter-spacing="-4">UAP</text>
+    <text x="190" y="-40" font-family="'Space Mono', Helvetica, sans-serif" font-size="94" fill="#ef4444" font-weight="900" letter-spacing="-4">OBSERVATORY</text>
+    
+    <rect x="0" y="20" width="80" height="12" fill="#ef4444" filter="url(#bloom)"/>
+    <rect x="85" y="20" width="800" height="12" fill="url(#hazard-lines)"/>
+    
+    <!-- Sub Tech Text -->
+    <text x="0" y="75" font-family="'Space Mono', monospace" font-size="22" fill="#a1a1aa" font-weight="700" letter-spacing="8">PROVENANCE / VERIFICATION / PIPELINE</text>
+    <text x="0" y="105" font-family="'Space Mono', monospace" font-size="14" fill="#52525b" font-weight="400" letter-spacing="2">[DEF CON 34] // SECURE TELEMETRY LINK ESTABLISHED</text>
+  </g>
+
+  <!-- Right side technical metrics and barcode -->
+  <g transform="translate(1000, 80)">
+    <line x1="0" y1="0" x2="0" y2="280" stroke="#3f3f46" stroke-width="2"/>
+    <line x1="4" y1="20" x2="4" y2="100" stroke="#ffffff" stroke-width="4"/>
+    <line x1="4" y1="120" x2="4" y2="180" stroke="#ef4444" stroke-width="4" filter="url(#bloom)"/>
+    
+    <!-- Barcode cluster -->
+    <rect x="30" y="220" width="4" height="60" fill="#ffffff"/>
+    <rect x="38" y="220" width="8" height="60" fill="#ffffff"/>
+    <rect x="50" y="220" width="2" height="60" fill="#ffffff"/>
+    <rect x="56" y="220" width="12" height="60" fill="#ffffff"/>
+    <rect x="72" y="220" width="4" height="60" fill="#ef4444"/>
+    <rect x="80" y="220" width="16" height="60" fill="#ffffff"/>
+    <rect x="100" y="220" width="2" height="60" fill="#ffffff"/>
+    
+    <text x="30" y="200" font-family="'Space Mono', monospace" font-size="12" fill="#52525b" font-weight="700" letter-spacing="1">ID:51NK0R5W1M</text>
+  </g>
+</svg>

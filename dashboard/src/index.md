@@ -36,7 +36,7 @@ const records = (await FileAttachment("data/records.json").json()).map((d) => ({
   observedAt: new Date(d.observedAt)
 }));
 const pipeline = await FileAttachment("data/pipeline.json").json();
-const heroImage = FileAttachment("assets/sorcerer-of-truth.png").href;
+const heroImage = FileAttachment("assets/uap-pipeline-observatory.svg").href;
 const relations = [...new Set(records.map((d) => d.relation))].sort();
 const topics = [...new Set(records.map((d) => d.topic))].sort();
 const dateExtent = d3.extent(records, (d) => d.observedAt);
@@ -44,11 +44,11 @@ const chartFilterState = Mutable(null);
 const setChartFilter = (next) => chartFilterState.value = next;
 const hero = html`<div class="grid grid-cols-2">
   <div class="card">
-    <p><strong>Sorcerer of Truth // UAP engineer · pipeline chemist · RFC philosopher</strong></p>
+    <p><strong>UAP engineer · pipeline chemist · RFC philosopher</strong></p>
     <h1>${observatoryIcon("ufo")} UAP Pipeline Observatory</h1>
     <p>Trace a claim from copied guidance to normative authority. Filter the evidence, expose load-bearing differences, and keep the decision attached to its receipts.</p>
   </div>
-  <div class="card"><img src=${heroImage} alt="Sorcerer of Truth standing over a luminous data maze"></div>
+  <div class="card"><img src=${heroImage} alt="UAP Pipeline Observatory routing archival evidence through a verified publication pipeline"></div>
 </div>`;
 ```
 

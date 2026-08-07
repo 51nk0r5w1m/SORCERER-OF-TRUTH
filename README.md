@@ -1,6 +1,6 @@
-# Sorcerer of Truth
+# UAP PIPELINE OBSERVATORY
 
-![Sorcerer of Truth overlooking the UAP Pipeline Observatory](dashboard/src/assets/sorcerer-of-truth.png)
+![UAP Pipeline Observatory cover](dashboard/src/assets/uap-pipeline-observatory.svg)
 
 **UAP Pipeline Observatory** is a provenance-first security research control plane built with [Observable Framework](https://observablehq.com/framework/). It turns a reviewable evidence register into linked filters, sortable records, source-authority maps, statistical heatmaps, archival UAP geography, atmospheric context controls, drift timelines, and reproducible public data artifacts.
 
