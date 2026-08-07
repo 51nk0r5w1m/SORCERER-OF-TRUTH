@@ -2,9 +2,10 @@ export default {
   title: "Sorcerer of Truth: UAP Pipeline Observatory",
   root: "src",
   output: "dist",
-  theme: ["midnight", "dashboard"],
+  theme: ["dark", "dashboard"],
   pages: [
     {name: "Control Plane", path: "/"},
+    {name: "Spatial Observatory", path: "/spatial"},
     {name: "Evidence Registry", path: "/registry"},
     {name: "Methodology", path: "/methodology"}
   ],

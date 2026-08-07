@@ -11,6 +11,7 @@ import {
   layerLabels,
   registryTable
 } from "./components/source-drift.js";
+import {observatoryIcon} from "./components/observatory-icons.js";
 ```
 
 ```js
@@ -22,7 +23,7 @@ const topics = [...new Set(records.map((d) => d.topic))].sort();
 const relations = [...new Set(records.map((d) => d.relation))].sort();
 ```
 
-# Evidence Registry
+# ${observatoryIcon("alien")} Evidence Registry
 
 A sortable, searchable register of every claim and receipt. Select a row to open its complete record.
 

@@ -5,9 +5,10 @@ toc: true
 
 ```js
 import {evidence, layers} from "./components/source-drift.js";
+import {observatoryIcon} from "./components/observatory-icons.js";
 ```
 
-# Methodology
+# ${observatoryIcon("observatory")} Methodology
 
 The dashboard separates source authority from evidence quality. A strong relationship label does not upgrade weak evidence, and a high-authority source can still preserve an obsolete or unsafe decision.
 
@@ -71,3 +72,31 @@ Each record names the load-bearing relationship between the source and the guida
 2. Run `npm run build` from `dashboard/`; validation fails before publication if the data contract is broken.
 3. Merge to `main`; the Pages workflow rebuilds the normalized data and static site.
 4. Use the workflow’s manual dispatch for a no-code rebuild. Scheduled external ingestion can be added later as a separate pull-request workflow so new evidence remains reviewable before publication.
+
+## Visual system
+
+Large Observatory glyphs are selected from [Game Icons](https://game-icons.net/) through the [Iconify Game Icons collection](https://icon-sets.iconify.design/game-icons/) under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). Small instrument glyphs use [Pixelarticons](https://pixelarticons.com/) under the MIT license. Selected SVG paths are vendored for deterministic static builds and inherit the active Observable theme through `currentColor`.
+
+## Statistical diagnostics
+
+The cyberstat console uses descriptive statistics only:
+
+- **Receipt coverage** is the share of visible records graded A or B.
+- **Drift rate** is the share whose relationship is not `Current Alignment`.
+- **Effective sources** is `exp(H)`, where `H` is Shannon entropy over source proportions using natural-log equivalence.
+- **Relationship entropy** is Shannon entropy in bits across relationship labels.
+- **Topic HHI** is the sum of squared topic proportions; higher values indicate greater corpus concentration.
+- **Median corpus lag** is the median number of whole UTC months between each observation and the latest visible observation.
+- **Pearson residuals** are `(observed − expected) / sqrt(expected)` under a topic–relationship independence model. They are exploratory cell diagnostics, not inferential significance tests.
+
+## Spatial evidence policy
+
+The Spatial Observatory keeps official UAP artifacts and atmospheric context in separate data lanes:
+
+- The initial UAP corpus contains only NARA Project Blue Book items with official date/location wording.
+- Published coordinates are representative named-place or named-installation centroids, never asserted observation coordinates.
+- Every centroid carries an explicit uncertainty radius and coordinate derivation method.
+- Missing case disposition remains `not stated in retrieved source`; the dashboard does not infer classification.
+- The Washington item is visibly typed as a graphic/comic rather than sensor media.
+- NASA/JPL CNEOS fireballs are an independently sourced context control, never UAP evidence and never an automatic explanation.
+- Point aggregation uses projected hexbins and explicitly warns that projection and bin width affect density.

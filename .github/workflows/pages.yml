@@ -6,6 +6,8 @@ on:
     paths:
       - "dashboard/**"
       - ".github/workflows/pages.yml"
+  schedule:
+    - cron: "0 8 * * *"
   workflow_dispatch:
 
 permissions:
@@ -27,6 +29,14 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: dashboard/package-lock.json
+      - name: Establish daily snapshot key
+        id: snapshot
+        run: echo "date=$(date -u +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+      - name: Cache Observable data snapshots
+        uses: actions/cache@v5
+        with:
+          path: dashboard/src/.observablehq/cache
+          key: observable-data-${{ hashFiles('dashboard/src/data/**') }}-${{ steps.snapshot.outputs.date }}
       - run: npm ci
         working-directory: dashboard
       - run: npm run build
