@@ -1,21 +1,38 @@
-@import url("observablehq:default.css");
-@import url("observablehq:theme-dark.css");
-@import url("observablehq:theme-alt.css");
-@import url("observablehq:theme-dashboard.css");
+/* Only custom overrides — Observable Framework auto-loads themes from config */
 
-/* Clean, flat, readable UI enhancements */
+/* Surgical fixes for the glowy blue link and accent colors */
+:root {
+  --theme-foreground-focus: #a1a1aa;
+}
+
+a {
+  color: var(--theme-foreground-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+a:hover {
+  color: var(--theme-foreground);
+}
+
+/* Flat cards — kill rounded corners and shadows from dashboard theme */
+.card {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Classification tag system */
 .category-tag {
-  font-family: var(--monospace, monospace);
+  font-family: var(--monospace);
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   padding: 2px 6px;
   margin-right: 4px;
-  border: 1px solid var(--theme-foreground-faint, #3f3f46);
+  border: 1px solid var(--theme-foreground-faintest, #3f3f46);
   background-color: var(--theme-background-alt, #18181b);
   color: var(--theme-foreground, #f4f4f5);
-  border-radius: 3px;
+  border-radius: 0;
   display: inline-block;
   white-space: nowrap;
 }
