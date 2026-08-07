@@ -27,14 +27,14 @@ const pipeline = await FileAttachment("data/pipeline.json").json();
 const heroImage = FileAttachment("assets/sorcerer-of-truth.png").href;
 const relations = [...new Set(records.map((d) => d.relation))].sort();
 const topics = [...new Set(records.map((d) => d.topic))].sort();
-const hero = html`<section class="hero">
-  <img class="hero-art" src=${heroImage} alt="">
-  <div class="hero-copy">
-    <span class="eyebrow">UAP Pipeline Observatory · security research control plane</span>
+const hero = html`<div class="grid grid-cols-2">
+  <div class="card">
+    <p><strong>UAP Pipeline Observatory · security research control plane</strong></p>
     <h1>Sorcerer of Truth</h1>
     <p>Trace a claim from copied guidance to normative authority. Filter the evidence, expose load-bearing differences, and keep the decision attached to its receipts.</p>
   </div>
-</section>`;
+  <div class="card"><img src=${heroImage} alt="Sorcerer of Truth standing over a luminous data maze"></div>
+</div>`;
 ```
 
 ${hero}
@@ -81,13 +81,14 @@ const searchInput = Inputs.search(faceted, {
 const filtered = Generators.input(searchInput);
 ```
 
-<div class="filter-rack">
-  <div>${layerInput}</div>
-  <div>${evidenceInput}</div>
-  <div>${relationInput}</div>
-  <div>${topicInput}</div>
-  <div class="filter-search">${searchInput}</div>
+<div class="grid grid-cols-4">
+  <div class="card">${layerInput}</div>
+  <div class="card">${evidenceInput}</div>
+  <div class="card">${relationInput}</div>
+  <div class="card">${topicInput}</div>
 </div>
+
+<div class="card">${searchInput}</div>
 
 ```js
 const verified = filtered.filter((d) => d.reviewStatus === "Verified").length;
@@ -98,71 +99,71 @@ const latest = filtered.length
   : "—";
 ```
 
-<div class="metric-grid">
-  ${metric(filtered.length, "Visible records", `of ${records.length} total`, "purple")}
-  ${metric(verified, "Verified", "A / B evidence", "lime")}
-  ${metric(driftSignals, "Drift signals", "non-aligned relationships", "coral")}
-  ${metric(activeTopics, "Active topics", `latest ${latest}`, "cream")}
+<div class="grid grid-cols-4">
+  ${metric(filtered.length, "Visible records", `of ${records.length} total`)}
+  ${metric(verified, "Verified", "A / B evidence")}
+  ${metric(driftSignals, "Drift signals", "non-aligned relationships")}
+  ${metric(activeTopics, "Active topics", `latest ${latest}`)}
 </div>
 
 ## Pipeline integrity
 
-<div class="lineage">
-  <div class="lineage-step">
-    <span class="section-label">01 · Canonical input</span>
-    <b>Reviewable CSV</b>
-    <code>${pipeline.records} records · ${pipeline.fields} fields</code>
+<div class="grid grid-cols-4">
+  <div class="card">
+    <small>01 · Canonical input</small>
+    <h3>Reviewable CSV</h3>
+    <p><code>${pipeline.records} records · ${pipeline.fields} fields</code></p>
   </div>
-  <div class="lineage-step">
-    <span class="section-label">02 · Quality gate</span>
-    <b>Schema validation</b>
-    <code>${(pipeline.completeness * 100).toFixed(0)}% required cells populated</code>
+  <div class="card">
+    <small>02 · Quality gate</small>
+    <h3>Schema validation</h3>
+    <p><code>${(pipeline.completeness * 100).toFixed(0)}% required cells populated</code></p>
   </div>
-  <div class="lineage-step">
-    <span class="section-label">03 · Transform</span>
-    <b>Typed JSON artifact</b>
-    <code>${pipeline.sourceLayers} layers · ${pipeline.topics} topics</code>
+  <div class="card">
+    <small>03 · Transform</small>
+    <h3>Typed JSON artifact</h3>
+    <p><code>${pipeline.sourceLayers} layers · ${pipeline.topics} topics</code></p>
   </div>
-  <div class="lineage-step">
-    <span class="section-label">04 · Publication</span>
-    <b>GitHub Pages</b>
-    <code>revision ${pipeline.revision.slice(0, 8)}</code>
+  <div class="card">
+    <small>04 · Publication</small>
+    <h3>GitHub Pages</h3>
+    <p><code>revision ${pipeline.revision.slice(0, 8)}</code></p>
   </div>
 </div>
 
-<p class="fingerprint">Dataset SHA-256 · ${pipeline.sha256}</p>
+${html`<p>Dataset SHA-256: <code>${pipeline.sha256}</code></p>`}
 
 ## Signal map
 
 <div class="card">
-  <h3 class="chart-title">Authority layers</h3>
-  <p class="chart-note">The path moves from normative sources to copied guidance. Node area shows visible records; labels and tooltips provide exact counts.</p>
+  <h3>Authority layers</h3>
+  <p>The path moves from normative sources to copied guidance. Node area shows visible records; labels and tooltips provide exact counts.</p>
   ${resize((width) => sourceSignal(filtered, width))}
 </div>
 
 <div class="grid grid-cols-2">
   <div class="card">
-    <h3 class="chart-title">Evidence matrix</h3>
-    <p class="chart-note">Source layer × evidence grade. Bubble area and the printed value both encode record count.</p>
+    <h3>Evidence matrix</h3>
+    <p>Source layer × evidence grade. Bubble area and the printed value both encode record count.</p>
     ${resize((width) => evidenceMatrix(filtered, width))}
   </div>
   <div class="card">
-    <h3 class="chart-title">Source drift over time</h3>
-    <p class="chart-note">Six-month observation bins, stacked by source layer.</p>
+    <h3>Source drift over time</h3>
+    <p>Six-month observation bins, stacked by source layer.</p>
     ${resize((width) => timelinePlot(filtered, width))}
   </div>
 </div>
 
 <div class="grid grid-cols-2">
   <div class="card">
-    <h3 class="chart-title">Relationship profile</h3>
-    <p class="chart-note">The most common ways guidance aligns, omits, diverges, or drifts.</p>
+    <h3>Relationship profile</h3>
+    <p>The most common ways guidance aligns, omits, diverges, or drifts.</p>
     ${resize((width) => rankedBar(filtered, "relation", width, {limit: 10}))}
   </div>
   <div class="card">
-    <h3 class="chart-title">Topic pressure</h3>
-    <p class="chart-note">Top security domains represented by the current evidence slice.</p>
-    ${resize((width) => rankedBar(filtered, "topic", width, {limit: 12, color: "#b8e62f"}))}
+    <h3>Topic pressure</h3>
+    <p>Top security domains represented by the current evidence slice.</p>
+    ${resize((width) => rankedBar(filtered, "topic", width, {limit: 12}))}
   </div>
 </div>
 
@@ -186,4 +187,4 @@ Inputs.table(queue, {
 })
 ```
 
-<p class="data-note">The charts and queue are reactive: every filter and search updates all views. Use the Evidence Registry for the full sortable record set and selected-record detail.</p>
+The charts and queue are reactive: every filter and search updates all views. Use the Evidence Registry for the full sortable record set and selected-record detail.

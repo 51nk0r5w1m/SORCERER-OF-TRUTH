@@ -9,7 +9,7 @@ import {evidence, layers} from "./components/source-drift.js";
 
 # Methodology
 
-<p class="lede">The dashboard separates source authority from evidence quality. A strong relationship label does not upgrade weak evidence, and a high-authority source can still preserve an obsolete or unsafe decision.</p>
+The dashboard separates source authority from evidence quality. A strong relationship label does not upgrade weak evidence, and a high-authority source can still preserve an obsolete or unsafe decision.
 
 ## Source hierarchy
 
@@ -24,11 +24,11 @@ Inputs.table(layers, {
 
 ## Evidence grades
 
-<div class="grade-grid">
-  ${evidence.map((d) => html`<article class="grade" style=${`--grade:${d.color}`}>
+<div class="grid grid-cols-5">
+  ${evidence.map((d) => html`<div class="card">
     <strong>${d.key}</strong>
     <h3>${d.label}</h3>
-  </article>`)}
+  </div>`)}
 </div>
 
 ## Relationship model

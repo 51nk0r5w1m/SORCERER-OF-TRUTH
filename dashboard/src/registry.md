@@ -24,7 +24,7 @@ const relations = [...new Set(records.map((d) => d.relation))].sort();
 
 # Evidence Registry
 
-<p class="lede">A sortable, searchable register of every claim and receipt. Select a row to open its complete record.</p>
+A sortable, searchable register of every claim and receipt. Select a row to open its complete record.
 
 ```js
 const layerInput = Inputs.select(layerDomain, {
@@ -70,13 +70,14 @@ const searchInput = Inputs.search(faceted, {
 const filtered = Generators.input(searchInput);
 ```
 
-<div class="filter-rack">
-  <div>${layerInput}</div>
-  <div>${evidenceInput}</div>
-  <div>${topicInput}</div>
-  <div>${relationInput}</div>
-  <div class="filter-search">${searchInput}</div>
+<div class="grid grid-cols-4">
+  <div class="card">${layerInput}</div>
+  <div class="card">${evidenceInput}</div>
+  <div class="card">${topicInput}</div>
+  <div class="card">${relationInput}</div>
 </div>
+
+<div class="card">${searchInput}</div>
 
 ```js
 const registry = registryTable(filtered);
@@ -84,27 +85,28 @@ const selected = Generators.input(registry);
 const record = selected?.[0];
 const csvHref = FileAttachment("data/records.csv").href;
 const jsonHref = FileAttachment("data/records.json").href;
-const downloads = html`<div class="download-bar">
+const downloads = html`<p>
   <a href=${csvHref} download>Download canonical CSV</a>
+  ·
   <a href=${jsonHref} download>Download normalized JSON</a>
-</div>`;
+</p>`;
 ```
 
 <div class="grid grid-cols-4">
   <div class="card grid-colspan-3">
-    <span class="section-label">${filtered.length} / ${records.length} records</span>
+    <p><strong>${filtered.length} / ${records.length} records</strong></p>
     ${registry}
   </div>
-  <aside class="detail">
+  <aside class="card">
     ${record ? html`
-      <span class="section-label">${record.id} · Evidence ${record.evidence}</span>
+      <small>${record.id} · Evidence ${record.evidence}</small>
       <h3>${record.title}</h3>
-      <p class="detail-meta">${record.layerLabel} · ${record.topic} · ${record.reviewStatus} · ${record.date}</p>
+      <p>${record.layerLabel} · ${record.topic} · ${record.reviewStatus} · ${record.date}</p>
       <p><strong>${record.relation}</strong></p>
       <p>${record.summary}</p>
-      <p class="data-note">Source: ${record.source}<br>Lifecycle: ${record.life}</p>
+      <p>Source: ${record.source}<br>Lifecycle: ${record.life}</p>
     ` : html`
-      <span class="section-label">Record detail</span>
+      <small>Record detail</small>
       <h3>Select a row</h3>
       <p>Selection keeps the claim, source authority, evidence grade, relationship, and summary together.</p>
     `}
