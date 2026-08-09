@@ -149,12 +149,9 @@ test("case-file HUD stays in the live-system footer", () => {
   assert.match(html, /\.slide-live\.slide-case \.case-layout \{[\s\S]*?padding-bottom: 30px;/);
 });
 
-test("Palestine coda preserves provenance and resolves to the latest verified snapshot", () => {
+test("closing circuit slide has the Moog quote and no counter", () => {
   assert.match(html, /data-title="The Circuit Remembers"/);
-  assert.match(html, /data-count-from="71660"/);
-  assert.match(html, /data-count-to="73300"/);
-  assert.match(html, /26 January 2026/i);
-  assert.match(html, /1 August 2026/i);
-  assert.match(html, /reported toll remains incomplete/i);
-  assert.match(html, /The Circuit Remembers/);
+  assert.match(html, /May the music passing through/);
+  assert.doesNotMatch(html, /data-count-from/);
+  assert.doesNotMatch(html, /Palestinians reported/i);
 });

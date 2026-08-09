@@ -237,14 +237,7 @@ body.rabbit-mode .rabbit-status { transform: translateY(0); }
   scroll-snap-align: start;
 }
 .slide::before {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  content: "";
-  background:
-    linear-gradient(118deg, transparent 0 73%, rgba(118,87,214,.075) 73% 73.5%, transparent 73.5%),
-    linear-gradient(62deg, transparent 0 88%, rgba(242,120,99,.065) 88% 88.4%, transparent 88.4%);
-  opacity: 0.4;
+  display: none;
 }
 .frame {
   position: relative;
@@ -1414,65 +1407,6 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   pointer-events: none;
 }
 .memorial-copy .slide-head { justify-content: center; gap: 1rem; }
-.memorial-count {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: min(58rem, 86vw);
-  height: clamp(7rem, 12vw, 12rem);
-  margin: .25rem auto 0;
-  border: 2px solid rgba(155,0,18,.72);
-  border-left-width: 12px;
-  background: rgba(5,5,7,.90);
-  color: #9b0012;
-  font: 950 clamp(5.8rem, 11vw, 11.5rem)/.92 var(--sans);
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-  box-shadow: 0 24px 90px rgba(0,0,0,.76), inset 0 0 0 1px rgba(242,234,216,.08);
-}
-.memorial-count span {
-  display: block;
-  transition: opacity 200ms linear, transform 200ms linear, filter 200ms linear;
-  text-shadow: 0 8px 24px #000;
-}
-.memorial-count .count-live { font-variant-numeric: tabular-nums; }
-.memorial-count::after {
-  display: none;
-}
-.memorial-count.is-complete::after {
-  display: none;
-}
-.memorial-dates {
-  position: relative;
-  min-height: 1.2rem;
-  margin-top: .9rem;
-  color: rgba(155,0,18,.92);
-  font: 800 .66rem/1.2 var(--mono);
-  letter-spacing: .22em;
-  text-transform: uppercase;
-}
-.memorial-dates .date-range { display: block; }
-.memorial-label {
-  margin: 1rem auto 0;
-  color: var(--ink);
-  font: 800 clamp(.78rem, 1vw, 1rem)/1.35 var(--mono);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.memorial-dedication {
-  max-width: min(68rem, 92vw);
-  margin: .8rem auto 0;
-  border-left: 0;
-  padding: 0;
-  background: transparent;
-  color: rgba(242,234,216,.86);
-  font: 850 clamp(.88rem, 1.05vw, 1.06rem)/1.35 var(--mono);
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  text-align: left;
-  white-space: normal;
-  box-shadow: none;
-}
 .memorial-copy blockquote {
   position: relative;
   max-width: min(68rem, 92vw);
@@ -1489,14 +1423,6 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   text-transform: none;
   opacity: 1;
   text-shadow: none;
-}
-.memorial-source {
-  max-width: 52rem;
-  margin: clamp(.8rem, 1.7vh, 1.3rem) auto 0;
-  color: rgba(242,234,216,.68);
-  font: 700 clamp(.62rem, .8vw, .78rem)/1.45 var(--mono);
-  letter-spacing: .08em;
-  text-transform: uppercase;
 }
 /* Ticket stub — jagged perforation, cream on ink, DEF CON admit-one */
 .ticket-stub {
@@ -1620,8 +1546,6 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   .reference-art { display: none; }
   .poster-img { width: min(80vh, 96vw); height: min(80vh, 96vw); }
   .memorial-copy { width: calc(100vw - 2rem); margin-top: 2rem; }
-  .memorial-count { height: 6rem; font-size: clamp(4.6rem, 18vw, 7rem); }
-  .memorial-dedication { white-space: normal; font-size: .82rem; }
   .memorial-copy blockquote { margin-top: 1.2rem; font-size: 1.08rem; line-height: 1.32; }
   .memorial-copy::before { height: 16rem; opacity: .28; }
 }
@@ -1707,13 +1631,7 @@ body.export-mode [data-reveal] { opacity: 1 !important; transform: none !importa
       <div class="memorial-scrim" aria-hidden="true"></div>
       <div class="memorial-copy">
         <div class="slide-head"><span class="kicker">The circuit remembers every interruption</span><span class="slide-no">21</span></div>
-        <div class="memorial-count" aria-label="Reported deaths increased from 71,660 on 26 January 2026 to more than 73,300 by 1 August 2026" data-count-from="71660" data-count-to="73300">
-          <span class="count-live">71,660</span>
-        </div>
-        <div class="memorial-dates"><span class="date-range">26 January 2026 -> 1 August 2026 source check</span></div>
-        <p class="memorial-label">Palestinians reported killed in Gaza since 7 October 2023</p>
-        <blockquote data-reveal="1">May the music passing through this device somehow help to bring just a little more peace to this troubled world.</blockquote>
-        <p class="memorial-source" data-reveal="1">Start: WAFA / Gaza Health Ministry, 26 Jan 2026 // current: AP, 1 Aug 2026, citing Gaza Health Ministry // reported toll remains incomplete</p>
+        <blockquote><strong>May the music passing through this device somehow help to bring just a little more peace to this troubled world.</strong></blockquote>
       </div>
     </div><aside class="speaker-notes"><ul><li>End on the circuit board image and the Bob Moog quote. Let the image and the words do the work.</li></ul></aside></section></main>
   <script>
@@ -4863,47 +4781,6 @@ window.addEventListener("load",()=>{
   scheduleScene(slides[currentIndex],{instant:exportMode||reducedMotion});
 });
 
-// Memorial live counter counts up from the January snapshot to the current checked source.
-(function initMemorialCounter(){
-  const countEl=document.querySelector(".memorial-count");
-  if(!countEl)return;
-  const from=Number(countEl.dataset.countFrom)||71660;
-  const to=Number(countEl.dataset.countTo)||73300;
-  const liveEl=countEl.querySelector(".count-live");
-  if(!liveEl)return;
-  if(exportMode){
-    liveEl.textContent=fmt(to);
-    countEl.classList.add("is-complete");
-    return;
-  }
-  let started=false,startTime=0,duration=4000;
-  function fmt(n){return n.toLocaleString("en-US");}
-  function tick(now){
-    if(!startTime)startTime=now;
-    const elapsed=now-startTime;
-    const progress=Math.min(1,elapsed/duration);
-    // Ease out cubic
-    const eased=1-Math.pow(1-progress,3);
-    const current=Math.round(from+(to-from)*eased);
-    liveEl.textContent=fmt(current);
-    if(progress>=1){
-      liveEl.textContent=fmt(to);
-      countEl.classList.add("is-complete");
-    } else {
-      requestAnimationFrame(tick);
-    }
-  }
-  // Use IntersectionObserver to start counting when visible
-  const observer=new IntersectionObserver(entries=>{
-    entries.forEach(entry=>{
-      if(entry.isIntersecting&&!started){
-        started=true;
-        requestAnimationFrame(tick);
-      }
-    });
-  },{threshold:.5});
-  observer.observe(countEl);
-})();
 </script>
 </body>
 </html>
