@@ -38,22 +38,21 @@ jobs:
           key: observable-data-${{ hashFiles('dashboard/src/data/**') }}-${{ steps.snapshot.outputs.date }}
       - run: npm ci
       - run: npm run build
-      - run: npm ci
-        working-directory: dashboard
-      - run: npm run build
-        working-directory: dashboard
+      # Dashboard build disabled until finalized
+      # - run: npm ci
+      #   working-directory: dashboard
+      # - run: npm run build
+      #   working-directory: dashboard
       - name: Assemble Cohesive Site
         run: |
-          mkdir -p _site/dashboard
+          mkdir -p _site
           cp index.html _site/index.html
           cp speaker-notes.html _site/speaker-notes.html
           touch _site/.nojekyll
-          touch _site/dashboard/.nojekyll
           if [ -d prototypes ]; then cp -r prototypes _site/; fi
           if [ -d public ]; then cp -r public _site/; fi
           if [ -f DEEP-RESEARCH.MD ]; then cp DEEP-RESEARCH.MD _site/; fi
           if [ -f STORYTELLING_PHYSICS.md ]; then cp STORYTELLING_PHYSICS.md _site/; fi
-          cp -r dashboard/dist/* _site/dashboard/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
