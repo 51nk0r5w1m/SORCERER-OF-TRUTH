@@ -22,7 +22,7 @@ const assetSources = {
   uapPatch: "IMAGES/uap-patch.svg",
   rocket: "IMAGES/image2.jpeg",
   matrixSpoon: "IMAGES/image1.jpeg",
-  circuit: "IMAGES/image0.png",
+  circuit: "images/circuit-board.jpg",
 };
 
 function optimizedAsset(name, source) {
@@ -37,7 +37,7 @@ function optimizedAsset(name, source) {
   const args = isPoster
       ? [input, "-resize", "1400x1400>", "-strip", "-quality", "76", output]
       : name === "circuit"
-      ? [input, "-crop", "1206x1050+0+145", "-resize", "1100x1100>", "-strip", "-quality", "72", output]
+      ? [input, "-resize", "1100x1100>", "-strip", "-quality", "76", output]
       : [input, "-resize", "1200x1200>", "-strip", "-quality", "74", output];
 
   try {
@@ -386,7 +386,8 @@ function head(slide) {
 }
 
 function image(slide, className = "art-img") {
-  return `<img class="${className}" src="${assets[slide.art]}" alt="">`;
+  const src = slide.type === "memorial" ? "images/circuit-board.jpg" : assets[slide.art];
+  return `<img class="${className}" src="${src}" alt="">`;
 }
 
 function speakerNotes(slide) {
@@ -471,6 +472,14 @@ function slideHtml(slide) {
       <div class="memorial-copy">
         ${head(slide)}
         <blockquote><strong>${esc(slide.body)}</strong></blockquote>
+        <div class="ticket-stub" data-reveal="1" style="margin:clamp(.6rem,1.2vh,.9rem) auto 0;max-width:420px;">
+          <div class="ticket-side"><span class="ticket-label">with</span><span class="ticket-big" style="font-size:1.6rem;">&lt;3</span></div>
+          <div class="ticket-perf"></div>
+          <div class="ticket-body">
+            <div class="ticket-row"><span>Speaker</span><b>Carley Fant</b></div>
+            <div class="ticket-row"><span>Handle</span><b><em>51nk0r5w1m</em></b></div>
+          </div>
+        </div>
       </div>
     </div>`;
   }
@@ -1874,33 +1883,44 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   z-index: 2;
   overflow: hidden;
   background: #050507;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(.6rem, 1.4vh, 1.2rem);
 }
-.memorial-art,
-.memorial-scrim {
-  position: absolute;
-  inset: 0;
-  margin: 0;
+.memorial-art {
+  position: relative;
+  z-index: 2;
+  width: min(28rem, 44vw, 44vh);
+  aspect-ratio: 3/4;
+  margin: 0 auto;
+  border: 1px solid rgba(242,234,216,.18);
+  box-shadow: 0 4px 40px rgba(0,0,0,.6);
+  overflow: hidden;
+  flex-shrink: 0;
 }
 .memorial-art img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: .98;
-  filter: contrast(1.28) saturate(1.16) brightness(.78);
+  filter: contrast(1.18) saturate(1.12) brightness(.88);
 }
+.memorial-scrim { display: none; }
 .memorial-layout::before {
   position: absolute;
-  inset: -8%;
-  z-index: 1;
+  inset: -12%;
+  z-index: 0;
   content: "";
   pointer-events: none;
   background:
-    repeating-linear-gradient(0deg, transparent 0 28px, rgba(159,183,154,.09) 28px 29px, transparent 29px 58px),
-    repeating-linear-gradient(90deg, transparent 0 44px, rgba(242,234,216,.06) 44px 45px, transparent 45px 90px);
-  opacity: .20;
-  transform: rotate(-2deg) scale(1.08);
-  animation: circuit-drift 9s linear infinite alternate;
+    repeating-linear-gradient(0deg, transparent 0 18px, rgba(159,183,154,.03) 18px 19px, transparent 19px 36px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(159,183,154,.025) 28px 29px, transparent 29px 56px),
+    repeating-linear-gradient(45deg, transparent 0 40px, rgba(242,234,216,.015) 40px 41px, transparent 41px 80px),
+    repeating-linear-gradient(-45deg, transparent 0 40px, rgba(242,234,216,.015) 40px 41px, transparent 41px 80px);
+  opacity: .45;
+  animation: circuit-drift 18s linear infinite alternate;
 }
 .memorial-layout::after {
   position: absolute;
@@ -1909,27 +1929,20 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   content: "";
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 47%, rgba(5,5,7,.06) 0 34%, rgba(5,5,7,.20) 55%, rgba(5,5,7,.82) 100%),
-    linear-gradient(180deg, rgba(5,5,7,.72), transparent 24%, transparent 64%, rgba(5,5,7,.86));
-  mix-blend-mode: normal;
+    radial-gradient(ellipse at 50% 50%, transparent 0 25%, rgba(5,5,7,.15) 45%, rgba(5,5,7,.70) 100%);
 }
 @keyframes circuit-drift {
-  from { transform: rotate(-2deg) translate3d(-10px, -5px, 0) scale(1.08); }
-  to { transform: rotate(1.5deg) translate3d(12px, 8px, 0) scale(1.12); }
-}
-.memorial-scrim {
-  background:
-    radial-gradient(ellipse at 50% 58%, transparent 0 30%, rgba(5,5,7,.18) 56%, rgba(5,5,7,.64) 100%);
-  z-index: 1;
-  mix-blend-mode: normal;
+  from { transform: rotate(-.8deg) translate3d(-3px, -2px, 0) scale(1.03); }
+  to { transform: rotate(.6deg) translate3d(4px, 3px, 0) scale(1.05); }
 }
 .memorial-copy {
   position: relative;
   z-index: 3;
   width: min(72rem, 82vw);
-  margin: clamp(.8rem, 2.2vh, 2rem) auto 0;
+  margin: 0 auto;
   text-align: center;
   text-shadow: 0 10px 34px #050507;
+  flex-shrink: 1;
 }
 .memorial-copy::before {
   position: absolute;
