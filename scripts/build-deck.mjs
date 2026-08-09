@@ -1749,14 +1749,15 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
 #slide-05 .framework-layout .copy { align-self: end; padding-bottom: 28px; text-shadow: 0 8px 28px #050507; }
 #slide-05 .conflict-stack { align-self: end; margin-bottom: 30px; }
 #slide-05 .ghost-art { display: none; }
-#slide-07 .questions-layout { min-height: calc(100vh - 78px); align-content: end; padding-bottom: 28px; }
+#slide-07 .questions-layout { min-height: auto; align-content: center; padding-bottom: 60px; }
 #slide-07 .questions-layout > div:first-child { position: relative; z-index: 4; width: 100%; text-shadow: 0 8px 28px #050507; }
 #slide-07 .question-grid { position: relative; z-index: 4; width: 100%; grid-template-columns: repeat(4,minmax(0,1fr)); }
 #slide-07 .question-grid article {
-  min-height: 9.5rem;
-  background: linear-gradient(180deg, rgba(5,5,7,.96), rgba(5,5,7,.90));
+  min-height: auto;
+  padding: .8rem;
+  background: rgba(5,5,7,.94);
   border-color: rgba(242,234,216,.28);
-  box-shadow: 0 18px 48px rgba(0,0,0,.52);
+  box-shadow: none;
   backdrop-filter: none;
 }
 #slide-07 .question-grid b { font-size: 1.55rem; }
