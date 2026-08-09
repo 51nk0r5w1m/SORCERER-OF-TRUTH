@@ -1,14 +1,6 @@
-```
-  ╔═══════════════════════════════════════════════════════════════╗
-  ║                                                               ║
-  ║   S O U R C E   O F   T R U T H                              ║
-  ║   ─────────────────────────────────                           ║
-  ║   a field guide for deep technical research                   ║
-  ║                                                               ║
-  ║   DEF CON 34 // Las Vegas // 2025                             ║
-  ║                                                               ║
-  ╚═══════════════════════════════════════════════════════════════╝
-```
+# SOURCE OF TRUTH
+
+**A Field Guide for Deep Technical Research** // DEF CON 34 // Las Vegas // 2025
 
 > *"The model is not the system. The map is not the territory. The blog post is not the RFC."*
 
@@ -16,19 +8,15 @@
 
 ## Who Is Carley
 
-```
-  ┌──────────────────────────────────────────┐
-  │  CARLEY FANT                              │
-  │  Extraterrestrial Pipeline Scrubber       │
-  │  UAP Platform Engineer                    │
-  │                                           │
-  │  DOMAIN     AppSec / IAM                  │
-  │  STACK      Cloud / Identity              │
-  │  PIPELINE   Provenance                    │
-  │  EVIDENCE   RFC / NIST                    │
-  │  STATUS     Active                        │
-  └──────────────────────────────────────────┘
-```
+**Carley Fant** // Extraterrestrial Pipeline Scrubber // UAP Platform Engineer
+
+| | |
+|---|---|
+| **Domain** | AppSec / IAM |
+| **Stack** | Cloud / Identity |
+| **Pipeline** | Provenance |
+| **Evidence** | RFC / NIST |
+| **Status** | Active |
 
 Secure cloud, identity, and software-delivery platforms by day. Anomalous signals investigated with the same discipline by night: follow the evidence, test the model, keep the receipts.
 
@@ -44,33 +32,31 @@ The path here was weird:
 
 A single HTML file. No frameworks. No build step. No dependencies. Just 21 slides, interactive canvas scenes, and a methodology that works on anything the internet tells you is true.
 
-```
-   SLIDE MAP
-   ─────────────────────────────────────────
-   01  Source of Truth          ░░ cover
-   02  Who Is Carley            ░░ origin
-   03  Inception, But RFCs      ░░ rabbit hole
-   04  The Feed                 ░░ the problem
-   05  When Guidance Conflicts  ░░ thesis
-   06  Source Hierarchy         ░░ the system
-   07  Four Questions           ░░ the protocol
-   08  Simplification           ░░ the trap
-   ─────────────────────────────────────────
-   09  JWT Storage              ░░ case 01
-   10  Default Decision         ░░ interlude
-   11  OAuth Implicit Flow      ░░ case 02
-   12  The Model                ░░ breather
-   13  Password Hashing         ░░ case 03
-   14  There Is No Spoon        ░░ interlude
-   15  CORS                     ░░ case 04
-   ─────────────────────────────────────────
-   16  Consensus Engine         ░░ the twist
-   17  AI Exoskeleton           ░░ the warning
-   18  Find The Humans          ░░ the heart
-   19  Field Guide Checklist    ░░ the artifact
-   20  Close                    ░░ landing
-   21  The Circuit Remembers    ░░ memorial
-```
+### Slide Map
+
+| # | Title | Beat |
+|---|-------|------|
+| 01 | Source of Truth | cover |
+| 02 | Who Is Carley | origin |
+| 03 | Inception, But RFCs | rabbit hole |
+| 04 | The Feed | the problem |
+| 05 | When Guidance Conflicts | thesis |
+| 06 | Source Hierarchy | the system |
+| 07 | Four Questions | the protocol |
+| 08 | Simplification | the trap |
+| 09 | JWT Storage | case 01 |
+| 10 | Default Decision | interlude |
+| 11 | OAuth Implicit Flow | case 02 |
+| 12 | The Model | breather |
+| 13 | Password Hashing | case 03 |
+| 14 | There Is No Spoon | interlude |
+| 15 | CORS | case 04 |
+| 16 | Consensus Engine | the twist |
+| 17 | AI Exoskeleton | the warning |
+| 18 | Find The Humans | the heart |
+| 19 | Field Guide Checklist | the artifact |
+| 20 | Close | landing |
+| 21 | The Circuit Remembers | memorial |
 
 ## The Rabbit Hole
 
@@ -82,38 +68,22 @@ This talk is about that.
 
 Four case studies. Same four questions. Same pattern every time -- like crop circles appearing in different fields but always with the same geometry:
 
-```
-  ┌─────────────────────────┐     ┌─────────────────────────┐
-  │  1. JWT STORAGE          │     │  2. OAUTH IMPLICIT       │
-  │                          │     │                          │
-  │  "Use httpOnly cookies"  │     │  "Use implicit flow"     │
-  │  vs.                     │     │  vs.                     │
-  │  "JavaScript-accessible  │     │  "That was deprecated    │
-  │   storage" -- bigger     │     │   years ago but the      │
-  │   category, different    │     │   diagrams refused       │
-  │   question entirely      │     │   to die"                │
-  └─────────────────────────┘     └─────────────────────────┘
-  ┌─────────────────────────┐     ┌─────────────────────────┐
-  │  3. PASSWORD HASHING     │     │  4. CORS                 │
-  │                          │     │                          │
-  │  "Just hash it"          │     │  "Add the CORS header"   │
-  │  vs.                     │     │  vs.                     │
-  │  "Hash it with WHAT      │     │  "The error IS the       │
-  │   parameters? On WHAT    │     │   security boundary      │
-  │   hardware? Against WHAT │     │   doing its job.         │
-  │   threat model?"         │     │   You're removing        │
-  │                          │     │   the lock."             │
-  └─────────────────────────┘     └─────────────────────────┘
-```
+**Case 01 -- JWT Storage:** "Use httpOnly cookies" vs. "JavaScript-accessible storage" -- a bigger category, a different question entirely.
+
+**Case 02 -- OAuth Implicit:** "Use implicit flow" vs. "That was deprecated years ago but the diagrams refused to die."
+
+**Case 03 -- Password Hashing:** "Just hash it" vs. "Hash it with WHAT parameters? On WHAT hardware? Against WHAT threat model?"
+
+**Case 04 -- CORS:** "Add the CORS header" vs. "The error IS the security boundary doing its job. You're removing the lock."
 
 ## The Protocol
 
-```
-  Q1  What does the surface answer say?
-  Q2  What does the authority (RFC, OWASP, ASVS) say?
-  Q3  What is the load-bearing difference?
-  Q4  What does this force us to ask next?
-```
+Every case study runs through four questions:
+
+1. What does the surface answer say?
+2. What does the authority (RFC, OWASP, ASVS) say?
+3. What is the load-bearing difference?
+4. What does this force us to ask next?
 
 Four questions. That's the whole methodology. The rest is just practice.
 
@@ -121,25 +91,11 @@ Four questions. That's the whole methodology. The rest is just practice.
 
 Primary sources traced during this talk's preparation:
 
-```
-  TIER 1 -- SPECIFICATIONS
-  ├── RFC 6749    OAuth 2.0 Authorization Framework
-  ├── RFC 6750    Bearer Token Usage
-  ├── RFC 7519    JSON Web Token (JWT)
-  ├── RFC 8252    OAuth 2.0 for Native Apps
-  ├── RFC 8446    TLS 1.3
-  ├── RFC 9207    OAuth 2.0 Authorization Server Issuer Identification
-  ├── BCP 240     Browser-Based Apps
-  └── Fetch Spec  Same-Origin Policy / CORS
+**Tier 1 -- Specifications:** RFC 6749 (OAuth 2.0), RFC 6750 (Bearer Tokens), RFC 7519 (JWT), RFC 8252 (OAuth for Native Apps), RFC 8446 (TLS 1.3), RFC 9207 (Authorization Server Issuer ID), BCP 240 (Browser-Based Apps), Fetch Spec (Same-Origin Policy / CORS)
 
-  TIER 2 -- VERIFICATION FRAMEWORKS
-  ├── OWASP ASVS 5.0
-  ├── OWASP WSTG
-  └── OWASP Cheat Sheet Series
+**Tier 2 -- Verification Frameworks:** OWASP ASVS 5.0, OWASP WSTG, OWASP Cheat Sheet Series
 
-  TIER 3 -- STANDARDS BODIES
-  └── NIST SP 800-63B  (password hashing parameters)
-```
+**Tier 3 -- Standards Bodies:** NIST SP 800-63B (password hashing parameters)
 
 ## Talk History
 
@@ -169,21 +125,17 @@ Timing cues. Suggested delivery. Anecdotes. Audience interaction. Emergency shor
 
 ## Controls
 
-```
-  →  / Space     next slide
-  ←              previous slide
-  ↓              next reveal step
-  ↑              previous step
-  1-9            scene interaction
-  S              toggle speaker notes
-```
+| Key | Action |
+|-----|--------|
+| `→` / `Space` | Next slide |
+| `←` | Previous slide |
+| `↓` | Next reveal step |
+| `↑` | Previous step |
+| `1-9` | Scene interaction |
+| `S` | Toggle speaker notes |
 
 ---
 
-```
-  follow the signal.
-  classify the evidence.
-  make the call.
+*Follow the signal. Classify the evidence. Make the call.*
 
-  ◎ the source of truth is a practice, not a document.
-```
+*The source of truth is a practice, not a document.*
