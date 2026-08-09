@@ -8,7 +8,7 @@ const outDir = path.join(root, "build", "embedded-assets");
 mkdirSync(outDir, { recursive: true });
 
 const assetSources = {
-  heroRabbit: "dashboard/src/assets/uap-pipeline-observatory.svg",
+  heroRabbit: "IMAGES/ChatGPT Image Aug 5, 2026, 03_00_37 AM.png",
   simplification: "IMAGES/ChatGPT Image Aug 5, 2026, 03_24_34 AM.png",
   defaultDecision: "IMAGES/ChatGPT Image Aug 5, 2026, 03_32_36 AM (1).png",
   feedWorld: "IMAGES/ChatGPT Image Aug 5, 2026, 03_32_36 AM (4).png",
