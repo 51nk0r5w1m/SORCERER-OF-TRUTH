@@ -79,8 +79,8 @@ const slides = [
     art: "rocket",
     kicker: "Whois // UAP Platform Engineer",
     h1: "Carley Fant",
-    role: "UAP Platform Engineer // Truth Teller's Field Notes",
-    body: "I build secure cloud, identity, and software-delivery platforms—and investigate anomalous signals with the same discipline: follow the evidence, test the model, keep the receipts.",
+    role: "Extraterrestrial Pipeline Scrubber",
+    body: "Secure cloud, identity, and software-delivery platforms. Anomalous signals investigated with the same discipline: follow the evidence, test the model, keep the receipts.",
     notes: [
       "Anchor identity with the early portrait: the talk is technical, but the method is personal and practiced.",
       "This slide should establish credibility without turning into a resume.",
