@@ -262,7 +262,7 @@ const slides = [
     type: "reference",
     art: "matrixSpoon",
     kicker: "Interlude // representation failure",
-    h1: "The map is not the world.",
+    h1: "The map is not the territory.",
     body: "Every abstraction bends perception. Research is how we find the residuals, the edge conditions, and the places where the map quietly edits reality.",
     notes: [
       "Use the Matrix reference lightly: it reinforces model versus system without derailing the talk.",
