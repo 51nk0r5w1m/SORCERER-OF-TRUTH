@@ -2,7 +2,7 @@ export default {
   title: "UAP PIPELINE OBSERVATORY",
   root: "src",
   output: "dist",
-  theme: "dashboard",
+  theme: ["deep-space", "alt", "wide"],
   pages: [
     {name: "Control Plane", path: "/"},
     {name: "Spatial Observatory", path: "/spatial"},

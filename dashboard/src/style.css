@@ -1,8 +1,20 @@
-/* Only custom overrides — Observable Framework auto-loads themes from config */
-
-/* Surgical fixes for the glowy blue link and accent colors */
+/* Built-in deep-space theme stays authoritative; these are readability overrides only. */
 :root {
-  --theme-foreground-focus: #a1a1aa;
+  --theme-foreground-focus: #f0ede4;
+  --signal: #39ff14;
+  --warn: #b8964a;
+  --crit: #d14d42;
+  --sans: var(--monospace);
+  --serif: var(--monospace);
+}
+
+body,
+button,
+input,
+select,
+textarea,
+table {
+  font-family: var(--monospace);
 }
 
 a {
@@ -38,9 +50,9 @@ a:hover {
 }
 
 .category-tag.primary {
-  background-color: #ef4444;
-  color: #ffffff;
-  border-color: #ef4444;
+  background-color: var(--signal);
+  color: #000000;
+  border-color: var(--signal);
 }
 
 .category-tag.dark {
