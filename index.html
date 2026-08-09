@@ -1354,11 +1354,8 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   width: min(28rem, 44vw, 44vh);
   aspect-ratio: 3/4;
   margin: 0 auto;
-  border: 2px solid rgba(242,234,216,.28);
-  box-shadow:
-    0 0 40px rgba(155,0,18,.35),
-    0 0 120px rgba(155,0,18,.15),
-    0 4px 60px rgba(0,0,0,.7);
+  border: 1px solid rgba(242,234,216,.18);
+  box-shadow: 0 4px 40px rgba(0,0,0,.6);
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -1377,12 +1374,12 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   content: "";
   pointer-events: none;
   background:
-    repeating-conic-gradient(from 0deg at 50% 50%, transparent 0deg 4deg, rgba(155,0,18,.04) 4deg 5deg, transparent 5deg 9deg),
-    repeating-linear-gradient(0deg, transparent 0 22px, rgba(159,183,154,.07) 22px 23px, transparent 23px 44px),
-    repeating-linear-gradient(90deg, transparent 0 36px, rgba(242,234,216,.05) 36px 37px, transparent 37px 72px),
-    radial-gradient(ellipse at 50% 50%, rgba(155,0,18,.08) 0%, transparent 60%);
-  opacity: .6;
-  animation: circuit-drift 12s linear infinite alternate;
+    repeating-linear-gradient(0deg, transparent 0 18px, rgba(159,183,154,.03) 18px 19px, transparent 19px 36px),
+    repeating-linear-gradient(90deg, transparent 0 28px, rgba(159,183,154,.025) 28px 29px, transparent 29px 56px),
+    repeating-linear-gradient(45deg, transparent 0 40px, rgba(242,234,216,.015) 40px 41px, transparent 41px 80px),
+    repeating-linear-gradient(-45deg, transparent 0 40px, rgba(242,234,216,.015) 40px 41px, transparent 41px 80px);
+  opacity: .45;
+  animation: circuit-drift 18s linear infinite alternate;
 }
 .memorial-layout::after {
   position: absolute;
@@ -1391,11 +1388,11 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   content: "";
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 50% 50%, transparent 0 20%, rgba(5,5,7,.30) 50%, rgba(5,5,7,.92) 100%);
+    radial-gradient(ellipse at 50% 50%, transparent 0 25%, rgba(5,5,7,.15) 45%, rgba(5,5,7,.70) 100%);
 }
 @keyframes circuit-drift {
-  from { transform: rotate(-1.5deg) translate3d(-6px, -3px, 0) scale(1.06); }
-  to { transform: rotate(1deg) translate3d(8px, 5px, 0) scale(1.10); }
+  from { transform: rotate(-.8deg) translate3d(-3px, -2px, 0) scale(1.03); }
+  to { transform: rotate(.6deg) translate3d(4px, 3px, 0) scale(1.05); }
 }
 .memorial-copy {
   position: relative;
