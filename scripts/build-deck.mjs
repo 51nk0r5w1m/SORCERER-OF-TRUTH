@@ -1751,17 +1751,18 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
 #slide-05 .ghost-art { display: none; }
 #slide-07 .questions-layout { min-height: auto; align-content: center; padding-bottom: 60px; }
 #slide-07 .questions-layout > div:first-child { position: relative; z-index: 4; width: 100%; text-shadow: 0 8px 28px #050507; }
-#slide-07 .question-grid { position: relative; z-index: 4; width: 100%; grid-template-columns: repeat(4,minmax(0,1fr)); }
+#slide-07 .questions-layout h2 { font-size: clamp(1.8rem,3.2vw,2.8rem); max-width: 20ch; }
+#slide-07 .question-grid { position: relative; z-index: 4; width: 100%; grid-template-columns: repeat(2,1fr); grid-template-rows: auto auto; gap: .6rem; }
 #slide-07 .question-grid article {
   min-height: auto;
-  padding: .8rem;
+  padding: .8rem 1rem;
   background: rgba(5,5,7,.94);
   border-color: rgba(242,234,216,.28);
   box-shadow: none;
   backdrop-filter: none;
 }
-#slide-07 .question-grid b { font-size: 1.55rem; }
-#slide-07 .question-grid p { font: 860 clamp(.70rem,.78vw,.80rem)/1.34 var(--sans); }
+#slide-07 .question-grid b { font-size: 1.3rem; display: inline; margin-right: .5rem; }
+#slide-07 .question-grid p { display: inline; font: 600 clamp(.78rem,.9vw,.88rem)/1.4 var(--sans); }
 #slide-07 .ghost-art { display: none; }
 #slide-06 .hierarchy-layout h2 { position: relative; z-index: 4; text-shadow: 0 12px 34px #050507; }
 #slide-06 .tier-grid { position: relative; z-index: 4; }
