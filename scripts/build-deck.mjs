@@ -497,7 +497,7 @@ const sceneConfig = {
   "slide-07": { scene: "protocol", actions: [["OPEN CASE", "open"], ["RESET", "reset"]] },
   "slide-08": { scene: "machine", readout: "ASSUMPTIONS // 07", actions: [["SIMPLIFY", "simplify"], ["RESTORE", "restore"]] },
   "slide-09": { scene: "jwt", actions: [["INJECT SCRIPT", "inject"], ["ISOLATE", "isolate"]] },
-  "slide-10": { scene: "default", readout: "DEFAULT // LOADED", actions: [["ACCEPT", "accept"], ["CHOOSE", "choose"]] },
+  "slide-10": { scene: "static" },
   "slide-11": { scene: "oauth", actions: [["TRACE FORWARD", "trace"], ["SHOW FOSSIL", "fossil"]] },
   "slide-12": { scene: "model", actions: [["DISSOLVE", "dissolve"], ["RESTORE", "restore"]] },
   "slide-13": { scene: "hash", actions: [["COST +", "cost"], ["RESET", "reset"]] },
@@ -521,7 +521,7 @@ const slideStepCounts = {
 
 function sceneLayer(slide) {
   const config = sceneConfig[slide.id];
-  if (!config) return "";
+  if (!config || config.scene === "static") return "";
   const controls = config.actions.map(([label, action], index) => (
     `<button type="button" data-action="${action}" data-key="${index + 1}">${label}</button>`
   )).join("");
@@ -1736,9 +1736,9 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
 #slide-14 .copy p { color: rgba(242,234,216,.82); }
 #slide-14.slide-live .scene-canvas {
   z-index: 5;
-  opacity: .76;
+  opacity: .45;
   mix-blend-mode: normal;
-  clip-path: inset(0 0 0 42%);
+  clip-path: inset(0 0 0 58%);
 }
 @keyframes spoon-meme-loosen {
   0% { transform: translate3d(-8px, 6px, 0) rotate(-1.6deg) scale(.985); }
