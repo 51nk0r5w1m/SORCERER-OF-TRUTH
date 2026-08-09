@@ -53,6 +53,7 @@ jobs:
           if [ -d public ]; then cp -r public _site/; fi
           if [ -f DEEP-RESEARCH.MD ]; then cp DEEP-RESEARCH.MD _site/; fi
           if [ -f STORYTELLING_PHYSICS.md ]; then cp STORYTELLING_PHYSICS.md _site/; fi
+          if [ -d images ]; then cp -r images _site/; fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
