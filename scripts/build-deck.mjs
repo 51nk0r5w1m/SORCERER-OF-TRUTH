@@ -497,7 +497,7 @@ const sceneConfig = {
   "slide-07": { scene: "protocol", actions: [["OPEN CASE", "open"], ["RESET", "reset"]] },
   "slide-08": { scene: "machine", readout: "ASSUMPTIONS // 07", actions: [["SIMPLIFY", "simplify"], ["RESTORE", "restore"]] },
   "slide-09": { scene: "jwt", actions: [["INJECT SCRIPT", "inject"], ["ISOLATE", "isolate"]] },
-  "slide-10": { scene: "static" },
+  "slide-10": { scene: "default", readout: "DEFAULT // LOADED", actions: [["ACCEPT", "accept"], ["CHOOSE", "choose"]] },
   "slide-11": { scene: "oauth", actions: [["TRACE FORWARD", "trace"], ["SHOW FOSSIL", "fossil"]] },
   "slide-12": { scene: "model", actions: [["DISSOLVE", "dissolve"], ["RESTORE", "restore"]] },
   "slide-13": { scene: "hash", actions: [["COST +", "cost"], ["RESET", "reset"]] },
@@ -2032,8 +2032,8 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   z-index: 2;
 }
 #slide-10.slide-live .scene-canvas {
-  z-index: 7;
-  opacity: 1;
+  z-index: 1;
+  opacity: .35;
   mix-blend-mode: normal;
 }
 #slide-10.slide-live.slide-poster .poster-frame {

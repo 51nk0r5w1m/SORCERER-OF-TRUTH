@@ -66,8 +66,8 @@ test("approved surreal visual language is embedded", () => {
 });
 
 test("prototype playfulness is part of the deck, not an external demo", () => {
-  assert.equal(html.match(/class="scene-canvas"/g)?.length, 19);
-  for (const label of ["TRANSMIT", "SCAN SKY", "RANK SOURCES", "SIMPLIFY", "BEND MAP", "BREAK LOOP", "TRACE AUTHOR", "DISSOLVE", "RUN METHOD"]) {
+  assert.equal(html.match(/class="scene-canvas"/g)?.length, 20);
+  for (const label of ["TRANSMIT", "SCAN SKY", "RANK SOURCES", "SIMPLIFY", "CHOOSE", "BEND MAP", "BREAK LOOP", "TRACE AUTHOR", "DISSOLVE", "RUN METHOD"]) {
     assert.match(html, new RegExp(`>${label.replace(/[+*]/g, "\\$&")}<`));
   }
   assert.match(html, /data-scene="graph"/);
