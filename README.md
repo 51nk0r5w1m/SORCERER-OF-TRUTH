@@ -1,74 +1,158 @@
-# Source of Truth
+```
+  ╔═══════════════════════════════════════════════════════════════╗
+  ║                                                               ║
+  ║   S O U R C E   O F   T R U T H                              ║
+  ║   ─────────────────────────────────                           ║
+  ║   a field guide for deep technical research                   ║
+  ║                                                               ║
+  ║   DEF CON 34 // Las Vegas // 2025                             ║
+  ║                                                               ║
+  ╚═══════════════════════════════════════════════════════════════╝
+```
 
-**A Field Guide for Deep Technical Research** | DEF CON 34
-
-> *The source of truth is not a document. It is a practice.*
+> *"The model is not the system. The map is not the territory. The blog post is not the RFC."*
 
 ---
 
-Security guidance conflicts. Blog posts contradict RFCs. Tutorials cite deprecated flows. AI summaries echo the consensus without checking the standard. **Source of Truth** is a methodology talk that gives engineers a repeatable system for tracing security claims back to their actual source: specifications, verification frameworks, maintainer context, and implementation reality.
+You ever fall down a rabbit hole at 2am tracing a security recommendation back to its source and end up six RFCs deep in a mailing list thread from 2011 where two cryptographers are politely eviscerating each other over a single sentence? And then you look up and realize the blog post that sent you there got it completely wrong?
 
-## The Deck
+Yeah. This talk is about that.
 
-**[View the live presentation](https://51nk0r5w1m.github.io/SORCERER-OF-TRUTH/)**
+**Source of Truth** is a methodology for navigating the crop circles of security guidance -- the strange patterns that form when blog posts cite blog posts that cite tweets that cite a misreading of a spec that was deprecated three years ago. Everyone points at the circle and says "look, consensus!" but nobody checks who made the first mark in the field.
 
-A single-file, self-contained HTML slide deck with:
-- 21 slides covering methodology, four case studies, and a field guide checklist
-- Interactive canvas scenes (WebGL-free, pure Canvas 2D)
-- Keyboard navigation, HUD overlays, and baked-in speaker notes
-- Zero external dependencies at runtime
+This is the field guide for checking.
 
-### Case Studies
+## [Enter the Deck](https://51nk0r5w1m.github.io/SORCERER-OF-TRUTH/)
 
-| # | Topic | Core Question |
-|---|-------|---------------|
-| 1 | JWT Storage | Where should tokens live? |
-| 2 | OAuth Implicit Flow | When does documentation drift? |
-| 3 | Password Hashing | What do "just hash it" and the spec actually say? |
-| 4 | CORS | Is the error the security boundary? |
+A single HTML file. No frameworks. No build step. No dependencies. Just 21 slides, interactive canvas scenes, and a methodology that works on anything the internet tells you is true.
 
-Each case study runs the same four-question protocol:
-1. What does the surface answer say?
-2. What does the authority (RFC, OWASP, ASVS) say?
-3. What is the load-bearing difference?
-4. What does this force us to ask next?
+```
+   SLIDE MAP
+   ─────────────────────────────────────────
+   01  Source of Truth          ░░ cover
+   02  Who Is Carley            ░░ origin
+   03  Inception, But RFCs      ░░ rabbit hole
+   04  The Feed                 ░░ the problem
+   05  When Guidance Conflicts  ░░ thesis
+   06  Source Hierarchy         ░░ the system
+   07  Four Questions           ░░ the protocol
+   08  Simplification           ░░ the trap
+   ─────────────────────────────────────────
+   09  JWT Storage              ░░ case 01
+   10  Default Decision         ░░ interlude
+   11  OAuth Implicit Flow      ░░ case 02
+   12  The Model                ░░ breather
+   13  Password Hashing         ░░ case 03
+   14  There Is No Spoon        ░░ interlude
+   15  CORS                     ░░ case 04
+   ─────────────────────────────────────────
+   16  Consensus Engine         ░░ the twist
+   17  AI Exoskeleton           ░░ the warning
+   18  Find The Humans          ░░ the heart
+   19  Field Guide Checklist    ░░ the artifact
+   20  Close                    ░░ landing
+   21  The Circuit Remembers    ░░ memorial
+```
 
-## Research
+## The Rabbit Hole
 
-The talk is grounded in primary-source research across:
-- **RFCs:** 6749, 6750, 7519, 8252, 8446, 9207, and the Browser-Based Apps BCP
-- **OWASP:** ASVS 5.0, WSTG, Cheat Sheet Series
-- **NIST:** SP 800-63B (password hashing parameters and threat assumptions)
-- **W3C / WHATWG:** Fetch specification, Same-Origin Policy
+Four case studies. Same four questions. Same pattern every time -- like crop circles appearing in different fields but always with the same geometry:
 
-The research methodology itself is the subject of the talk: a source hierarchy that ranks evidence types (specification > verification framework > maintainer context > implementation reality) and a protocol for tracing claims through that hierarchy.
+```
+  ┌─────────────────────────┐     ┌─────────────────────────┐
+  │  1. JWT STORAGE          │     │  2. OAUTH IMPLICIT       │
+  │                          │     │                          │
+  │  "Use httpOnly cookies"  │     │  "Use implicit flow"     │
+  │  vs.                     │     │  vs.                     │
+  │  "JavaScript-accessible  │     │  "That was deprecated    │
+  │   storage" -- bigger     │     │   years ago but the      │
+  │   category, different    │     │   diagrams refused       │
+  │   question entirely      │     │   to die"                │
+  └─────────────────────────┘     └─────────────────────────┘
+  ┌─────────────────────────┐     ┌─────────────────────────┐
+  │  3. PASSWORD HASHING     │     │  4. CORS                 │
+  │                          │     │                          │
+  │  "Just hash it"          │     │  "Add the CORS header"   │
+  │  vs.                     │     │  vs.                     │
+  │  "Hash it with WHAT      │     │  "The error IS the       │
+  │   parameters? On WHAT    │     │   security boundary      │
+  │   hardware? Against WHAT │     │   doing its job.         │
+  │   threat model?"         │     │   You're removing        │
+  │                          │     │   the lock."             │
+  └─────────────────────────┘     └─────────────────────────┘
+```
 
-## Serving Locally
+## The Protocol
+
+Every case study runs through the same four questions:
+
+```
+  Q1  What does the surface answer say?
+  Q2  What does the authority (RFC, OWASP, ASVS) say?
+  Q3  What is the load-bearing difference?
+  Q4  What does this force us to ask next?
+```
+
+That's it. Four questions. The rest is just practice.
+
+## Down the Research Stack
+
+Primary sources traced during this talk's preparation:
+
+```
+  TIER 1 -- SPECIFICATIONS
+  ├── RFC 6749    OAuth 2.0 Authorization Framework
+  ├── RFC 6750    Bearer Token Usage
+  ├── RFC 7519    JSON Web Token (JWT)
+  ├── RFC 8252    OAuth 2.0 for Native Apps
+  ├── RFC 8446    TLS 1.3
+  ├── RFC 9207    OAuth 2.0 Authorization Server Issuer Identification
+  ├── BCP 240     Browser-Based Apps
+  └── Fetch Spec  Same-Origin Policy / CORS
+
+  TIER 2 -- VERIFICATION FRAMEWORKS
+  ├── OWASP ASVS 5.0
+  ├── OWASP WSTG
+  └── OWASP Cheat Sheet Series
+
+  TIER 3 -- STANDARDS BODIES
+  └── NIST SP 800-63B  (password hashing parameters)
+```
+
+## Running Locally
 
 ```sh
-# Kill anything on port 8000 and serve
+# kill whatever's on 8000, serve the deck
 lsof -ti :8000 | xargs -r kill
 python3 -m http.server 8000
 
-# Then open http://localhost:8000
-# Save files, refresh browser. No rebuild needed.
+# open http://localhost:8000
+# edit files. refresh browser. that's it.
 ```
 
 ## Speaker Notes
 
-Comprehensive storytelling-style speaker notes live in [`SPEAKER_NOTES.md`](SPEAKER_NOTES.md) -- timing cues, suggested delivery, anecdotes, audience interaction ideas, emergency shortcuts, and mantras.
+Over-prepared, storytelling-style notes for all 21 slides: [`SPEAKER_NOTES.md`](SPEAKER_NOTES.md)
 
-## Navigation
+Timing cues. Suggested delivery. Anecdotes. Audience interaction. Emergency shortcuts if you're running long. Emergency stretches if you're running short. The whole paranoid speaker safety net.
 
-| Key | Action |
-|-----|--------|
-| `Arrow Right` / `Space` | Next slide |
-| `Arrow Left` | Previous slide |
-| `Arrow Down` | Next step (reveal) |
-| `Arrow Up` | Previous step |
-| `1-9` | Scene interaction keys |
-| `S` | Toggle speaker notes |
+## Controls
+
+```
+  →  / Space     next slide
+  ←              previous slide
+  ↓              next reveal step
+  ↑              previous step
+  1-9            scene interaction
+  S              toggle speaker notes
+```
 
 ---
 
-*Follow the signal. Classify the evidence. Make the call.*
+```
+  follow the signal.
+  classify the evidence.
+  make the call.
+
+  ◎ the source of truth is a practice, not a document.
+```
