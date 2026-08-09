@@ -3344,7 +3344,7 @@ function drawConsensus(ctx, width, height, state, time) {
     ctx.beginPath();
     ctx.ellipse(0,hearthY,hearthW*.72,baseR*.28,0,0,Math.PI*2);
     ctx.fill();
-    const tongueCount=broken?62:48;
+    const tongueCount=broken?32:24;
     for(let i=0;i<tongueCount;i++){
       const seed=seeded(i*61);
       const x=(seed-.5)*hearthW+Math.sin(time*.004+i)*18*flameHeat;
@@ -3354,13 +3354,13 @@ function drawConsensus(ctx, width, height, state, time) {
       flameTongue(ctx,x,y,h,w,time*.022+i,flameHeat*(.76+seed*.74));
     }
     ctx.restore();
-    for(let bar=0;bar<24;bar++){
+    for(let bar=0;bar<12;bar++){
       const y=hearthY*.62-baseR*.28+bar*9;
       const jitter=Math.sin(time*.018+bar)*18*flameHeat;
       ctx.fillStyle=hexAlpha(bar%4===0?SC.signal:SC.coral,.18);
       ctx.fillRect(-hearthW*.46+jitter,y,hearthW*(.18+seeded(bar*13)*.18),2);
     }
-    for(let px=0;px<58;px++){
+    for(let px=0;px<28;px++){
       const seed=seeded(px*97);
       const x=(seed-.5)*hearthW*1.12;
       const y=hearthY*.62-baseR*.42+((time*.09+seed*220)%170);
@@ -3375,12 +3375,12 @@ function drawConsensus(ctx, width, height, state, time) {
     ctx.save();
     ctx.translate(cx,cy);
     ctx.scale(1,.62);
-    for(let band=0;band<13;band++){
-      const r=baseR+12+band*17+Math.sin(time*.002+band)*14*flameHeat;
-      const a0=time*.0012*(band%2?1:-1)+band*.41;
+    for(let band=0;band<7;band++){
+      const r=baseR+12+band*32+Math.sin(time*.002+band)*14*flameHeat;
+      const a0=time*.0012*(band%2?1:-1)+band*.76;
       ctx.beginPath();
-      for(let i=0;i<=96;i++){
-        const p=i/96;
+      for(let i=0;i<=48;i++){
+        const p=i/48;
         const a=a0+p*Math.PI*2;
         const noise=Math.sin(a*5+time*.003+band)*12+Math.sin(a*11-time*.002)*7;
         const lift=-Math.max(0,Math.sin(a))*54*flameHeat;
@@ -3396,11 +3396,11 @@ function drawConsensus(ctx, width, height, state, time) {
           ?hexAlpha(SC.coral,.10+flameHeat*.28)
           :hexAlpha(SC.cream,.045+flameHeat*.13);
       ctx.lineWidth=1.2+flameHeat*3.6;
-      ctx.shadowColor=hexAlpha(band%3===0?SC.cream:SC.coral,band%3===0?.24:.58);
-      ctx.shadowBlur=12+flameHeat*34;
+      ctx.shadowColor=hexAlpha(band%3===0?SC.cream:SC.coral,band%3===0?.18:.42);
+      ctx.shadowBlur=6+flameHeat*14;
       ctx.stroke();
     }
-    for(let ember=0;ember<86;ember++){
+    for(let ember=0;ember<40;ember++){
       const seed=seeded(ember*29);
       const a=headAngle+seed*Math.PI*2+time*.001*(seeded(ember*31)>.5?1:-1);
       const rise=((time*.055+seed*520)%310);
