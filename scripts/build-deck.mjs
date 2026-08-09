@@ -1494,12 +1494,18 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  border: 3px solid var(--purple-hot);
-  background: #000;
+  border: 2px solid var(--purple-hot);
+  background: radial-gradient(ellipse at 38% 42%, #1a0030 0%, #0d001a 28%, #050507 52%, #0a0018 74%, #000 100%);
   box-shadow: none;
   opacity: 0;
   transform: translate(-50%, 50%) scale(.35);
   pointer-events: none;
+  animation: void-breathe 3s linear infinite alternate;
+}
+@keyframes void-breathe {
+  0% { border-color: var(--purple-hot); filter: hue-rotate(0deg); }
+  50% { border-color: #39ff14; filter: hue-rotate(30deg); }
+  100% { border-color: var(--purple-hot); filter: hue-rotate(-20deg); }
 }
 #slide-01 .scene-controls {
   top: auto;
@@ -1545,9 +1551,11 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   animation: field-note-blackout 2.2s linear forwards;
 }
 @keyframes cover-void-open {
-  0% { opacity: 0; transform: translate(-50%, 50%) scale(.3) rotate(0deg); }
-  28% { opacity: .96; transform: translate(-50%, 50%) scale(1.35) rotate(120deg); }
-  100% { opacity: 1; transform: translate(-50%, 50%) scale(2.2) rotate(320deg); }
+  0% { opacity: 0; transform: translate(-50%, 50%) scale(.3) rotate(0deg) skew(0deg); border-radius: 50%; }
+  15% { opacity: .9; transform: translate(-50%, 50%) scale(.9) rotate(60deg) skew(8deg, -4deg); border-radius: 48% 52% 46% 54%; }
+  35% { opacity: .96; transform: translate(-50%, 50%) scale(1.35) rotate(180deg) skew(-6deg, 3deg); border-radius: 54% 46% 52% 48%; }
+  60% { transform: translate(-50%, 50%) scale(1.8) rotate(260deg) skew(4deg, -8deg); border-radius: 46% 54% 48% 52%; }
+  100% { opacity: 1; transform: translate(-50%, 50%) scale(2.4) rotate(360deg) skew(0deg); border-radius: 50%; }
 }
 @keyframes field-note-blackout {
   0%, 38% { opacity: 0; }
