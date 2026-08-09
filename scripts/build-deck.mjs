@@ -65,8 +65,8 @@ const slides = [
     art: "heroRabbit",
     kicker: "DEF CON 34 // Engineering Research Field Guide",
     h1: "Source of Truth",
-    body: "Pipeline eats lore. I got them RFCs in me.",
-    meta: "Carley Fant // UAP Platform Engineer // 51nk0r5w1m",
+    body: "Trace the signal. Classify the evidence. Keep the receipts.",
+    meta: "C. FANT | UAP PLATFORM ENGINEER | SIGNAL TRACED",
     notes: [
       "Day 0 framing: this is not a talk about one bug class; it is about how engineers decide what to trust.",
       "Set the promise: a repeatable field guide for chasing claims into standards, verification frameworks, maintainer context, and implementation reality.",
