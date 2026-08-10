@@ -1,8 +1,37 @@
+# Dependencies
 node_modules/
+
+# Build & temp artifacts
+_site/
+test-results/
+build/
 .tmp-fonts/
 .tmp-playwright.config.mjs
-test-results/
+
+# Dashboard build cache
 dashboard/dist/
 dashboard/src/.observablehq/cache
 dashboard/.observablehq/
+
+# IDE & tooling config
+.vscode/
+.mcp.json
+skills-lock.json
+.claude/
+
+# Agent/skill vendor files
+.agents/
+agent/
+
+# Old assets & prototypes
+public/
+IMAGES/
+prototypes/
+scripts/
+observatory/
+
+# Windows zone identifiers
 *.Zone.Identifier
+
+# Misc artifacts
+*.pptx
