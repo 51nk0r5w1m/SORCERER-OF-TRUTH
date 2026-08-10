@@ -21,39 +21,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            dashboard/package-lock.json
-      - name: Establish daily snapshot key
-        id: snapshot
-        run: echo "date=$(date -u +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
-      - name: Cache Observable data snapshots
-        uses: actions/cache@v4
-        with:
-          path: dashboard/src/.observablehq/cache
-          key: observable-data-${{ hashFiles('dashboard/src/data/**') }}-${{ steps.snapshot.outputs.date }}
-      - run: npm ci
-      - run: npm run build
-      # Dashboard build disabled until finalized
-      # - run: npm ci
-      #   working-directory: dashboard
-      # - run: npm run build
-      #   working-directory: dashboard
-      - name: Assemble Cohesive Site
+      - name: Assemble site
         run: |
           mkdir -p _site
           cp index.html _site/index.html
-          cp speaker-notes.html _site/speaker-notes.html
           touch _site/.nojekyll
-          if [ -d prototypes ]; then cp -r prototypes _site/; fi
-          if [ -d public ]; then cp -r public _site/; fi
-          if [ -f DEEP-RESEARCH.MD ]; then cp DEEP-RESEARCH.MD _site/; fi
-          if [ -f STORYTELLING_PHYSICS.md ]; then cp STORYTELLING_PHYSICS.md _site/; fi
           if [ -d images ]; then cp -r images _site/; fi
+          if [ -f DEEP-RESEARCH.MD ]; then cp DEEP-RESEARCH.MD _site/; fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -8,11 +8,10 @@
   },
   "scripts": {
     "start": "npx serve -l 8000 .",
-    "build": "node scripts/build-deck.mjs",
-    "export": "node scripts/run-export.mjs",
-    "test": "node --test tests/deck.test.mjs && npm run test:e2e",
+    "build": "echo 'deck is pre-built — nothing to compile'",
+    "test": "node --test tests/deck.test.mjs && npx playwright test",
     "test:static": "node --test tests/deck.test.mjs",
-    "test:e2e": "node scripts/run-playwright.mjs test"
+    "test:e2e": "npx playwright test"
   },
   "keywords": [],
   "author": "",
