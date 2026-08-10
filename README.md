@@ -132,7 +132,7 @@ Timing cues. Suggested delivery. Anecdotes. Audience interaction. Emergency shor
 | `↓` | Next reveal step |
 | `↑` | Previous step |
 | `1-9` | Scene interaction |
-| `S` | Toggle speaker notes |
+| `N` | Toggle speaker notes |
 
 ---
 

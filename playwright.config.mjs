@@ -20,11 +20,21 @@ export default defineConfig({
   projects: [
     {
       name: "chromium-desktop",
+      testIgnore: /mobile\.e2e\.mjs/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 1366, height: 768 } },
     },
     {
       name: "chromium-stage",
+      testIgnore: /mobile\.e2e\.mjs/,
       use: { ...devices["Desktop Chrome"], viewport: { width: 1920, height: 1080 } },
+    },
+    {
+      name: "chromium-mobile",
+      testMatch: /mobile\.e2e\.mjs/,
+      use: {
+        ...devices["iPhone 13"],
+        browserName: "chromium",
+      },
     },
   ],
 });
