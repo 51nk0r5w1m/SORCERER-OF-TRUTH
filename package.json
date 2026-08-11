@@ -8,10 +8,11 @@
   },
   "scripts": {
     "start": "npx serve -l 8000 .",
-    "build": "echo 'deck is pre-built — nothing to compile'",
-    "test": "node --test tests/deck.test.mjs && npx playwright test",
+    "build": "echo 'deck is pre-built; nothing to compile'",
+    "test": "node --test tests/deck.test.mjs && npx playwright test --project=chromium-desktop --project=chromium-mobile",
     "test:static": "node --test tests/deck.test.mjs",
-    "test:e2e": "npx playwright test"
+    "test:e2e": "npx playwright test",
+    "test:stage": "npx playwright test --project=chromium-stage"
   },
   "keywords": [],
   "author": "",

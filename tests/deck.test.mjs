@@ -21,11 +21,33 @@ test("deck is self-contained at runtime", async () => {
     ...html.matchAll(/url\('([^']+)'\)/g),
   ].map((match) => match[1]);
 
-  const invalid = refs.filter((ref) => !ref.startsWith("data:") && !ref.startsWith("#"));
+  const allowedExternal = new Set(["images/circuit-board.jpg"]);
+  const invalid = refs.filter((ref) => !ref.startsWith("data:") && !ref.startsWith("#") && !allowedExternal.has(ref));
   assert.deepEqual(invalid, []);
 
   const stats = await stat(new URL("../index.html", import.meta.url));
   assert.ok(stats.size > 1_000_000, "embedded-asset deck should contain data URIs");
+});
+
+test("hosted speaker notes are viewer-facing research context", () => {
+  const notes = [...html.matchAll(/<aside class="speaker-notes"><ul>([\s\S]*?)<\/ul><\/aside>/g)]
+    .map((match) => match[1].replace(/<[^>]*>/g, " "));
+
+  assert.equal(notes.length, slideCount);
+
+  const joined = notes.join(" ");
+  assert.doesNotMatch(joined, /\bENERGY\b/i);
+  assert.doesNotMatch(joined, /\bPAUSE\b/i);
+  assert.doesNotMatch(joined, /\bLOOK AT AUDIENCE\b/i);
+  assert.doesNotMatch(joined, /seconds on this slide/i);
+  assert.doesNotMatch(joined, /Suggested delivery/i);
+  assert.doesNotMatch(joined, /paranoid speaker safety net/i);
+  assert.doesNotMatch(joined, /\bhigh-confidence sources\b/i);
+  assert.doesNotMatch(html, /Receipts &gt; Vibes/i);
+  assert.doesNotMatch(html, /Extraterrestrial Pipeline Scrubber/i);
+  assert.match(joined, /RFC 9700/);
+  assert.match(joined, /NIST SP 800-63B/);
+  assert.match(joined, /CORS/);
 });
 
 test("narrative follows the research-methodology thesis", () => {

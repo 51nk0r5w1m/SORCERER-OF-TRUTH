@@ -1,6 +1,6 @@
 # SOURCE OF TRUTH
 
-**A Field Guide for Deep Technical Research** // DEF CON 34 // Las Vegas // 2025
+**A Field Guide for Deep Technical Research** // DEF CON 34 // Las Vegas // 2026
 
 > *"The model is not the system. The map is not the territory. The blog post is not the RFC."*
 
@@ -8,7 +8,7 @@
 
 ## Who Is Carley
 
-**Carley Fant** // Extraterrestrial Pipeline Scrubber // UAP Platform Engineer
+**Carley Fant** // UAP Platform Engineer
 
 | | |
 |---|---|
@@ -102,7 +102,7 @@ Primary sources traced during this talk's preparation:
 | Conference | Year | Talk | Status |
 |-----------|------|------|--------|
 | **GrrCon** | 2024 | The initial deep-dive that cracked the surface | Delivered |
-| **DEF CON 34** | 2025 | Source of Truth: the full methodology | This one |
+| **DEF CON 34** | 2026 | Source of Truth: the full methodology | Delivered |
 
 The GrrCon talk was the prototype. It asked the question. DEF CON 34 is the answer -- a repeatable field guide for tracing any security claim back to something you can verify.
 
@@ -119,9 +119,7 @@ python3 -m http.server 8000
 
 ## Speaker Notes
 
-Over-prepared, storytelling-style notes for all 21 slides: [`SPEAKER_NOTES.md`](SPEAKER_NOTES.md)
-
-Timing cues. Suggested delivery. Anecdotes. Audience interaction. Emergency shortcuts if you're running long. Emergency stretches if you're running short. The whole paranoid speaker safety net.
+The hosted deck and [`SPEAKER_NOTES.md`](SPEAKER_NOTES.md) include viewer-facing notes for all 21 slides. They are written as follow-up research context: standards references, implementation implications, and the assumptions behind each security decision.
 
 ## Controls
 

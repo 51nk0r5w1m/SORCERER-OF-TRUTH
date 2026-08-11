@@ -94,19 +94,29 @@ test("memorial slide sign-off is fully visible", async ({ page }) => {
     if (!target) return { visible: false };
 
     const rect = target.getBoundingClientRect();
+    const slideRect = slide.getBoundingClientRect();
     return {
       visible: true,
+      top: rect.top,
       bottom: rect.bottom,
+      slideBottom: slideRect.bottom,
       viewportHeight: window.innerHeight,
-      isFullyVisible: rect.bottom <= window.innerHeight + 2,
+      isFullyVisible: rect.top >= -2 && rect.bottom <= window.innerHeight + 2,
+      isNotClippedBySlide: rect.bottom <= slideRect.bottom + 2,
     };
   });
 
   expect(result.visible).toBe(true);
-  expect(result.isFullyVisible, `sign-off cut off: bottom=${result.bottom} viewport=${result.viewportHeight}`).toBe(true);
+  expect(result.isNotClippedBySlide, `sign-off clipped by slide: bottom=${result.bottom} slideBottom=${result.slideBottom}`).toBe(true);
+  await page.evaluate(() => document.querySelector("#slide-21 .ticket-stub")?.scrollIntoView({ block: "center" }));
+  const centered = await page.locator("#slide-21 .ticket-stub").boundingBox();
+  expect(centered.y, `sign-off not reachable in viewport: ${JSON.stringify(centered)}`).toBeGreaterThanOrEqual(0);
+  expect(centered.y + centered.height).toBeLessThanOrEqual(result.viewportHeight + 2);
 });
 
-test("touch swipe navigates slides on mobile", async ({ page }) => {
+test("mobile reader mode preserves native touch scrolling", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+
   const result = await page.evaluate(() => {
     const target = document.querySelector("#deck");
     const touch = (y) => {
@@ -148,10 +158,23 @@ test("touch swipe navigates slides on mobile", async ({ page }) => {
 
   await settle(page);
 
-  expect(result.startPrevented).toBe(true);
-  expect(result.movePrevented).toBe(true);
-  expect(result.endPrevented).toBe(true);
+  expect(result.startPrevented).toBe(false);
+  expect(result.movePrevented).toBe(false);
+  expect(result.endPrevented).toBe(false);
 
   const step = await page.locator("#slide-01").getAttribute("data-step");
-  expect(Number(step)).toBeGreaterThanOrEqual(1);
+  expect(step).toBe("0");
+
+  await page.evaluate(() => window.scrollTo(0, document.querySelector("#slide-03").offsetTop));
+  await settle(page);
+  await expect(page).toHaveURL(/#slide-03$/);
+});
+
+test("mobile users can opt into slide view", async ({ page }) => {
+  await page.locator("#mobileViewToggle").click();
+  await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
+
+  const box = await page.locator("#slide-01 .scene-controls button").first().boundingBox();
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  expect(box.width).toBeGreaterThanOrEqual(44);
 });

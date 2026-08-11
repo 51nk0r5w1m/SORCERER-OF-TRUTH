@@ -7,6 +7,7 @@ test-results/
 build/
 .tmp-fonts/
 .tmp-playwright.config.mjs
+playwright-report/
 
 # Dashboard build cache
 dashboard/dist/
@@ -29,9 +30,19 @@ IMAGES/
 prototypes/
 scripts/
 observatory/
+sorcerer-of-truth/
+index - Copy.html
+SPEAKER-NOTES.md
+speaker-notes.html
+714ae8b1-9b7f-461e-b18c-bc79c7747003.png
+circuit-board-updated.jpg
 
 # Windows zone identifiers
 *.Zone.Identifier
+*:Zone.Identifier
 
 # Misc artifacts
 *.pptx
+*.key
+*.pdf
+*.zip
