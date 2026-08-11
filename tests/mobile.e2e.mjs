@@ -114,6 +114,56 @@ test("memorial slide sign-off is fully visible", async ({ page }) => {
   expect(centered.y + centered.height).toBeLessThanOrEqual(result.viewportHeight + 2);
 });
 
+test("bio photo is visible and not horizontally clipped on mobile", async ({ page }) => {
+  await goTo(page, "slide-02");
+  await page.locator("#slide-02 .bio-photo").scrollIntoViewIfNeeded();
+  await settle(page);
+
+  const result = await page.evaluate(() => {
+    const photo = document.querySelector("#slide-02 .bio-photo");
+    const image = document.querySelector("#slide-02 .bio-photo img");
+    if (!photo || !image) return { found: false };
+
+    const rect = photo.getBoundingClientRect();
+    return {
+      found: true,
+      loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height,
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+    };
+  });
+
+  expect(result.found).toBe(true);
+  expect(result.loaded).toBe(true);
+  expect(result.width).toBeGreaterThan(120);
+  expect(result.height).toBeGreaterThan(120);
+  expect(result.left, `photo clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
+  expect(result.right, `photo clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
+  expect(result.top, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight);
+  expect(result.bottom, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeGreaterThan(0);
+});
+
+test("speaker notes UI is suppressed on mobile", async ({ page }) => {
+  await expect(page.locator(".notes-hint")).toBeHidden();
+
+  await page.keyboard.press("N");
+  await settle(page);
+  await expect(page.locator(".speaker-notes-panel")).toBeHidden();
+
+  await page.locator("#mobileViewToggle").click();
+  await settle(page);
+  await page.keyboard.press("N");
+  await settle(page);
+  await expect(page.locator(".notes-hint")).toBeHidden();
+  await expect(page.locator(".speaker-notes-panel")).toBeHidden();
+});
+
 test("mobile reader mode preserves native touch scrolling", async ({ page }) => {
   await expect(page.locator("body")).toHaveClass(/mobile-reader/);
 

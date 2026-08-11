@@ -1873,7 +1873,10 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   .ticket-body { padding: 8px 10px; }
   .ticket-row { font-size: .56rem; grid-template-columns: 60px 1fr; gap: 6px; }
   .ticket-serial { font-size: .46rem; }
-  .notes-hint { font-size: .52rem; bottom: 8px; left: 50%; transform: translateX(-50%); }
+  .notes-hint,
+  .speaker-notes-panel {
+    display: none !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -2157,7 +2160,7 @@ function updateChrome() {
   const no = slide.querySelector(".slide-no")?.textContent?.trim() || String(currentIndex + 1).padStart(2, "0");
   const notes = [...slide.querySelectorAll(".speaker-notes li")].map((node) => node.textContent.trim());
   notesPanel.innerHTML = "<b>Speaker notes // " + no + " // " + title + "</b><ul>" + notes.map((note) => "<li>" + note + "</li>").join("") + "</ul>";
-  notesPanel.hidden = !notesVisible;
+  notesPanel.hidden = !notesVisible || mobileQuery.matches;
 }
 
 function advance() {
