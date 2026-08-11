@@ -11,6 +11,26 @@ async function goTo(page, slideId) {
   await settle(page);
 }
 
+async function canvasSignature(page, selector) {
+  return page.locator(selector).evaluate((canvas) => {
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    if (!ctx || width < 8 || height < 8) return { width, height, signature: "empty" };
+
+    const points = [
+      [0.18, 0.22], [0.33, 0.39], [0.51, 0.51], [0.69, 0.64], [0.82, 0.31],
+      [0.24, 0.78], [0.45, 0.17], [0.73, 0.84], [0.91, 0.49],
+    ];
+    const signature = points.map(([x, y]) => {
+      const pixel = ctx.getImageData(Math.floor(width * x), Math.floor(height * y), 1, 1).data;
+      return `${pixel[0]},${pixel[1]},${pixel[2]},${pixel[3]}`;
+    }).join("|");
+
+    return { width, height, signature };
+  });
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".slide").first()).toBeVisible();
@@ -164,6 +184,27 @@ test("speaker notes UI is suppressed on mobile", async ({ page }) => {
   await expect(page.locator(".speaker-notes-panel")).toBeHidden();
 });
 
+test("mobile reader keeps animated scene physics alive during thumb scroll", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+
+  const canvas = page.locator("#slide-01 .scene-canvas");
+  await expect(canvas).toBeVisible();
+
+  const before = await canvasSignature(page, "#slide-01 .scene-canvas");
+  await page.waitForTimeout(420);
+  const after = await canvasSignature(page, "#slide-01 .scene-canvas");
+
+  expect(before.width).toBeGreaterThan(100);
+  expect(before.height).toBeGreaterThan(180);
+  expect(after.signature).not.toBe(before.signature);
+
+  await goTo(page, "slide-08");
+  const posterCanvas = await canvasSignature(page, "#slide-08 .scene-canvas");
+  await page.waitForTimeout(420);
+  const posterCanvasAfter = await canvasSignature(page, "#slide-08 .scene-canvas");
+  expect(posterCanvasAfter.signature).not.toBe(posterCanvas.signature);
+});
+
 test("mobile reader mode preserves native touch scrolling", async ({ page }) => {
   await expect(page.locator("body")).toHaveClass(/mobile-reader/);
 
@@ -227,4 +268,11 @@ test("mobile users can opt into slide view", async ({ page }) => {
   const box = await page.locator("#slide-01 .scene-controls button").first().boundingBox();
   expect(box.height).toBeGreaterThanOrEqual(44);
   expect(box.width).toBeGreaterThanOrEqual(44);
+
+  const before = await canvasSignature(page, "#slide-01 .scene-canvas");
+  await page.locator("#slide-01 .scene-controls button").first().click();
+  await settle(page);
+  const after = await canvasSignature(page, "#slide-01 .scene-canvas");
+  await expect(page.locator("#slide-01")).toHaveAttribute("data-step", "1");
+  expect(after.signature).not.toBe(before.signature);
 });

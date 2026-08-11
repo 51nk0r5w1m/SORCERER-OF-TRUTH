@@ -1644,10 +1644,11 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
     inset: 0;
     width: 100%;
     height: 100%;
-    min-height: 18rem;
-    opacity: .22;
+    min-height: 24rem;
+    opacity: .42;
+    filter: saturate(1.16) contrast(1.12);
     pointer-events: none;
-    touch-action: auto;
+    touch-action: pan-y;
     clip-path: none !important;
     mix-blend-mode: normal;
   }
@@ -2065,7 +2066,7 @@ function syncCurrentFromScroll({ replaceHash = true } = {}) {
   slides.forEach((node, slideIndex) => node.classList.toggle("is-current", slideIndex === currentIndex));
   updateChrome();
   if (replaceHash) history.replaceState(null, "", "#" + slides[currentIndex].id);
-  window.onDeckSlideChange?.(slides[currentIndex], { instant: true });
+  window.onDeckSlideChange?.(slides[currentIndex], { instant: exportMode || reducedMotion });
 }
 
 function deriveSemanticState(slide, step, maxStep) {
@@ -4975,6 +4976,58 @@ function drawChecklistScene(ctx,width,height,state,time){
   ctx.fillStyle=count===9?SC.lime:SC.dim;ctx.font="900 12px monospace";ctx.textAlign="center";ctx.fillText(count+" / 9 RECEIPTS",cx,cy+86);ctx.textAlign="left";
 }
 
+function drawMobileKineticOverlay(ctx,width,height,state,time){
+  if(!isMobileReader())return;
+  const t=time*.001+(state.seed||0);
+  const cx=width*.5,cy=height*.45;
+  ctx.save();
+  ctx.globalCompositeOperation="screen";
+  ctx.lineWidth=1.2;
+  for(let ring=0;ring<4;ring++){
+    const phase=t*(.28+ring*.06)+ring*1.7;
+    const rx=width*(.18+ring*.09)+Math.sin(phase)*18;
+    const ry=height*(.11+ring*.045)+Math.cos(phase*.83)*12;
+    ctx.beginPath();
+    ctx.ellipse(cx+Math.sin(phase*.71)*22,cy+Math.cos(phase*.63)*18,rx,ry,phase*.18,0,Math.PI*2);
+    ctx.strokeStyle=ring%2?"rgba(180,139,255,.18)":"rgba(255,122,87,.18)";
+    ctx.stroke();
+  }
+  for(let i=0;i<26;i++){
+    const phase=t*(.45+(i%5)*.06)+i*.73;
+    const orbit=.16+((i*37)%100)/260;
+    const wobble=Math.sin(phase*1.9)*18;
+    const x=cx+Math.cos(phase)*width*orbit+wobble;
+    const y=cy+Math.sin(phase*.83)*height*(orbit*.74);
+    const pulse=(Math.sin(phase*2.7)+1)/2;
+    ctx.fillStyle=i%3===0?`rgba(159,183,154,${.22+pulse*.24})`:i%3===1?`rgba(255,122,87,${.16+pulse*.22})`:`rgba(180,139,255,${.14+pulse*.2})`;
+    ctx.beginPath();
+    ctx.arc(x,y,1.4+pulse*2.3,0,Math.PI*2);
+    ctx.fill();
+    if(i%4===0){
+      const tx=cx+Math.cos(phase+.8)*width*(orbit*.82);
+      const ty=cy+Math.sin(phase*.83+.8)*height*(orbit*.58);
+      ctx.beginPath();
+      ctx.moveTo(x,y);
+      ctx.lineTo(tx,ty);
+      ctx.strokeStyle="rgba(242,234,216,.12)";
+      ctx.stroke();
+    }
+  }
+  const sweep=(t*.18%1)*Math.PI*2;
+  const radius=Math.max(width,height)*.62;
+  const beam=ctx.createRadialGradient(cx,cy,0,cx,cy,radius);
+  beam.addColorStop(0,"rgba(159,183,154,.18)");
+  beam.addColorStop(.42,"rgba(255,122,87,.08)");
+  beam.addColorStop(1,"rgba(5,5,7,0)");
+  ctx.fillStyle=beam;
+  ctx.beginPath();
+  ctx.moveTo(cx,cy);
+  ctx.arc(cx,cy,radius,sweep,sweep+.38);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
 function drawScene(canvas,state,time){
   const ctx=canvas.getContext("2d");
   const size=resizeScene(canvas,ctx);
@@ -4998,6 +5051,7 @@ function drawScene(canvas,state,time){
   if(state.kind==="ai") drawAi(ctx,size.width,size.height,state,time);
   if(state.kind==="humans") drawHumans(ctx,size.width,size.height,state,time);
   if(state.kind==="checklist") drawChecklistScene(ctx,size.width,size.height,state,time);
+  drawMobileKineticOverlay(ctx,size.width,size.height,state,time);
 }
 
 function setReadout(slide,text){ const node=slide.querySelector("[data-readout]"); if(node) node.textContent=text; }
