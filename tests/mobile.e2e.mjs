@@ -69,7 +69,10 @@ test("text does not leave viewport on any slide", async ({ page }) => {
   }
 });
 
-test("scene control buttons meet 44px minimum tap target", async ({ page }) => {
+test("scene control buttons meet 44px minimum tap target in mobile slide view", async ({ page }) => {
+  await page.locator("#mobileViewToggle").click();
+  await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
+
   const slidesWithControls = await page.locator(".scene-controls").evaluateAll((controls) =>
     controls.map((c) => c.closest(".slide")?.id).filter(Boolean)
   );

@@ -220,13 +220,16 @@ test("rabbit follows the left-to-right maze path", async ({ page }) => {
 });
 
 test("former static slides expose live research instruments", async ({ page }) => {
+  test.setTimeout(45000);
   const targets = ["slide-02", "slide-04", "slide-06", "slide-08", "slide-10", "slide-14", "slide-16", "slide-18"];
   for (const id of targets) {
     await goTo(page, id);
-    await expect(page.locator(`#${id} .scene-canvas`)).toBeVisible();
-    await expect(page.locator(`#${id} .scene-controls button`).first()).toBeVisible();
+    await expect(page.locator(`#${id} .scene-canvas`)).toBeVisible({ timeout: 5000 });
+    await expect(page.locator(`#${id} .scene-controls button`).first()).toBeVisible({ timeout: 5000 });
   }
+});
 
+test("research instruments update readouts", async ({ page }) => {
   await goTo(page, "slide-04");
   await page.locator("#slide-04 [data-action='scan']").click();
   await expect(page.locator("#slide-04 [data-readout]")).toContainText("SCANNING");

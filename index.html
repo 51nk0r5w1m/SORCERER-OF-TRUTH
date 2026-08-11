@@ -5232,12 +5232,19 @@ function stopSceneLoop(){
 
 function sceneFrame(time){
   sceneFrameId=0;
-  const active=slides[currentIndex];
-  const canvas=active?.querySelector(".scene-canvas");
-  if(!canvas)return;
-  const state=sceneState.get(canvas);
-  drawScene(canvas,state,time);
-  if(!exportMode&&!reducedMotion&&(continuousScenes.has(state.kind)||time<(state.motionUntil||0)))sceneFrameId=requestAnimationFrame(sceneFrame);
+  const canvases=isMobileReader()
+    ? sceneCanvases.filter(canvas=>{
+      const rect=canvas.getBoundingClientRect();
+      return rect.bottom>-160&&rect.top<innerHeight+160;
+    })
+    : [slides[currentIndex]?.querySelector(".scene-canvas")].filter(Boolean);
+  let shouldContinue=false;
+  for(const canvas of canvases){
+    const state=sceneState.get(canvas);
+    drawScene(canvas,state,time);
+    shouldContinue=shouldContinue||continuousScenes.has(state.kind)||time<(state.motionUntil||0);
+  }
+  if(!exportMode&&!reducedMotion&&shouldContinue)sceneFrameId=requestAnimationFrame(sceneFrame);
 }
 
 function scheduleScene(slide,{instant=false}={}){
