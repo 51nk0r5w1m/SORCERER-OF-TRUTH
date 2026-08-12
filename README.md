@@ -15,7 +15,7 @@
 | **Domain** | AppSec / IAM |
 | **Stack** | Cloud / Identity |
 | **Pipeline** | Provenance |
-| **Evidence** | RFC / NIST |
+| **Evidence** | OWASP / RFC |
 | **Status** | Active |
 
 Secure cloud, identity, and software-delivery platforms by day. Anomalous signals investigated with the same discipline by night: follow the evidence, test the model, keep the receipts.
@@ -95,7 +95,7 @@ Primary sources traced during this talk's preparation:
 
 **Tier 2 -- Verification Frameworks:** OWASP ASVS 5.0, OWASP WSTG, OWASP Cheat Sheet Series
 
-**Tier 3 -- Standards Bodies:** NIST SP 800-63B (password hashing parameters)
+**Tier 3 -- Applied Security Guidance:** OWASP Password Storage Cheat Sheet, OWASP ASVS, and relevant RFC/BCP security considerations
 
 ## Talk History
 

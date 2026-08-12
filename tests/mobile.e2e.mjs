@@ -31,8 +31,34 @@ async function canvasSignature(page, selector) {
   });
 }
 
+async function canvasFrame(page, selector) {
+  return page.locator(selector).evaluate((canvas) => {
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    if (!ctx || width < 8 || height < 8) return { width, height, samples: [] };
+
+    const samples = [];
+    for (let gy = 1; gy <= 7; gy++) {
+      for (let gx = 1; gx <= 7; gx++) {
+        const pixel = ctx.getImageData(Math.floor(width * gx / 8), Math.floor(height * gy / 8), 1, 1).data;
+        samples.push(pixel[0], pixel[1], pixel[2], pixel[3]);
+      }
+    }
+    return { width, height, samples };
+  });
+}
+
+function meanFrameDelta(before, after) {
+  const length = Math.min(before.samples.length, after.samples.length);
+  if (!length) return 0;
+  let total = 0;
+  for (let i = 0; i < length; i++) total += Math.abs(before.samples[i] - after.samples[i]);
+  return total / length;
+}
+
 test.beforeEach(async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("./", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".slide").first()).toBeVisible();
 });
 
@@ -78,7 +104,12 @@ test("scene control buttons meet 44px minimum tap target in mobile slide view", 
   );
 
   for (const id of slidesWithControls) {
-    await goTo(page, id);
+    await page.evaluate((slideId) => {
+      const jump = document.querySelector("#jump");
+      jump.value = slideId;
+      jump.dispatchEvent(new Event("change", { bubbles: true }));
+    }, id);
+    await page.waitForTimeout(60);
     const buttons = await page.locator(`#${id} .scene-controls button`).all();
     for (const btn of buttons) {
       const box = await btn.boundingBox();
@@ -187,25 +218,60 @@ test("speaker notes UI is suppressed on mobile", async ({ page }) => {
   await expect(page.locator(".speaker-notes-panel")).toBeHidden();
 });
 
+test("mobile reader removes dead progress and slide scrollboxes", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+  await expect(page.locator(".progress")).toBeHidden();
+
+  await goTo(page, "slide-09");
+  const result = await page.evaluate(() => {
+    const topbar = getComputedStyle(document.querySelector(".topbar"));
+    const progress = getComputedStyle(document.querySelector(".progress"));
+    const scrollboxes = [...document.querySelectorAll("#slide-09 *")].filter((node) => {
+      const style = getComputedStyle(node);
+      return /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1;
+    }).map((node) => ({
+      tag: node.tagName,
+      className: node.className,
+      overflowY: getComputedStyle(node).overflowY,
+      scrollHeight: node.scrollHeight,
+      clientHeight: node.clientHeight,
+    }));
+
+    return {
+      progressDisplay: progress.display,
+      topbarTop: topbar.top,
+      bodyScrollbarWidth: topbar.getPropertyValue("scrollbar-width"),
+      scrollboxes,
+    };
+  });
+
+  expect(result.progressDisplay).toBe("none");
+  expect(result.topbarTop).toBe("0px");
+  expect(result.scrollboxes).toEqual([]);
+});
+
 test("mobile reader keeps animated scene physics alive during thumb scroll", async ({ page }) => {
   await expect(page.locator("body")).toHaveClass(/mobile-reader/);
 
   const canvas = page.locator("#slide-01 .scene-canvas");
   await expect(canvas).toBeVisible();
 
+  const titleFrameBefore = await canvasFrame(page, "#slide-01 .scene-canvas");
   const before = await canvasSignature(page, "#slide-01 .scene-canvas");
-  await page.waitForTimeout(420);
+  await page.waitForTimeout(620);
   const after = await canvasSignature(page, "#slide-01 .scene-canvas");
+  const titleFrameAfter = await canvasFrame(page, "#slide-01 .scene-canvas");
 
   expect(before.width).toBeGreaterThan(100);
   expect(before.height).toBeGreaterThan(180);
   expect(after.signature).not.toBe(before.signature);
+  expect(meanFrameDelta(titleFrameBefore, titleFrameAfter)).toBeGreaterThan(1.4);
 
   await goTo(page, "slide-08");
-  const posterCanvas = await canvasSignature(page, "#slide-08 .scene-canvas");
+  const posterCanvas = await canvasFrame(page, "#slide-08 .scene-canvas");
   await page.waitForTimeout(420);
-  const posterCanvasAfter = await canvasSignature(page, "#slide-08 .scene-canvas");
-  expect(posterCanvasAfter.signature).not.toBe(posterCanvas.signature);
+  const posterCanvasAfter = await canvasFrame(page, "#slide-08 .scene-canvas");
+  expect(meanFrameDelta(posterCanvas, posterCanvasAfter)).toBeGreaterThan(.2);
 });
 
 test("mobile reader mode preserves native touch scrolling", async ({ page }) => {

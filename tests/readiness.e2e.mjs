@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
   });
   page.on("pageerror", (error) => errors.push(error.message));
   page.errors = errors;
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("./", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".slide").first()).toBeVisible();
 });
 

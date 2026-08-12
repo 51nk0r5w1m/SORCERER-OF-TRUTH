@@ -11,8 +11,34 @@ async function maxStep(page, slideId) {
   return page.locator(`#${slideId}`).getAttribute("data-max-step");
 }
 
+async function canvasFrame(page, selector) {
+  return page.locator(selector).evaluate((canvas) => {
+    const ctx = canvas.getContext("2d");
+    const width = canvas.width;
+    const height = canvas.height;
+    if (!ctx || width < 8 || height < 8) return { width, height, samples: [] };
+
+    const samples = [];
+    for (let gy = 1; gy <= 7; gy++) {
+      for (let gx = 1; gx <= 7; gx++) {
+        const pixel = ctx.getImageData(Math.floor(width * gx / 8), Math.floor(height * gy / 8), 1, 1).data;
+        samples.push(pixel[0], pixel[1], pixel[2], pixel[3]);
+      }
+    }
+    return { width, height, samples };
+  });
+}
+
+function meanFrameDelta(before, after) {
+  const length = Math.min(before.samples.length, after.samples.length);
+  if (!length) return 0;
+  let total = 0;
+  for (let i = 0; i < length; i++) total += Math.abs(before.samples[i] - after.samples[i]);
+  return total / length;
+}
+
 test.beforeEach(async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("./", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".slide").first()).toBeVisible();
 });
 
@@ -149,6 +175,19 @@ test("clicking the active instrument advances one argument", async ({ page }) =>
   await page.locator("#slide-01 .scene-canvas").click({ position: { x: 420, y: 420 } });
   await settle(page);
   await expect(page).toHaveURL(/#slide-02$/);
+});
+
+test("title portal and rabbit spin at idle", async ({ page }) => {
+  const canvas = page.locator("#slide-01 .scene-canvas");
+  await expect(canvas).toBeVisible();
+
+  const before = await canvasFrame(page, "#slide-01 .scene-canvas");
+  await page.waitForTimeout(620);
+  const after = await canvasFrame(page, "#slide-01 .scene-canvas");
+
+  expect(before.width).toBeGreaterThan(500);
+  expect(before.height).toBeGreaterThan(400);
+  expect(meanFrameDelta(before, after)).toBeGreaterThan(1.2);
 });
 
 test("bio photo is a prominent full-slide design element", async ({ page }) => {
@@ -300,7 +339,7 @@ test("reset and number navigation are deterministic", async ({ page }) => {
 });
 
 test("export mode applies every final meaningful state", async ({ page }) => {
-  await page.goto("/?export=1", { waitUntil: "load" });
+  await page.goto("./?export=1", { waitUntil: "load" });
   const unresolved = await page.locator(".slide").evaluateAll((slides) => slides.filter((slide) => (
     slide.dataset.step !== slide.dataset.maxStep || !slide.classList.contains("is-resolved")
   )).map((slide) => slide.id));

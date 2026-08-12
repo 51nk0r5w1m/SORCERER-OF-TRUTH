@@ -1566,21 +1566,16 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior-y: contain;
+    scrollbar-width: none;
+  }
+  body.mobile-reader::-webkit-scrollbar {
+    display: none;
   }
   body.mobile-reader::before {
     display: none;
   }
   body.mobile-reader .progress {
-    position: sticky;
-    top: 0;
-    height: 6px;
-    z-index: 60;
-  }
-  body.mobile-reader .progress-track {
-    height: 6px;
-  }
-  body.mobile-reader .progress-maze {
-    height: 6px;
+    display: none;
   }
   body.mobile-reader .progress-marker,
   body.mobile-reader .progress-void {
@@ -1588,7 +1583,7 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   }
   body.mobile-reader .topbar {
     position: sticky;
-    top: 6px;
+    top: 0;
     z-index: 59;
     display: grid;
     grid-template-columns: 1fr auto;
@@ -1651,6 +1646,10 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
     touch-action: pan-y;
     clip-path: none !important;
     mix-blend-mode: normal;
+  }
+  body.mobile-reader #slide-01 .scene-canvas {
+    opacity: .88;
+    filter: saturate(1.35) contrast(1.24) brightness(1.12);
   }
   body.mobile-reader .frame,
   body.mobile-reader .poster-frame,
@@ -2570,6 +2569,63 @@ function rabbit(ctx, x, y, scale, alpha) {
   ctx.restore(); ctx.globalAlpha = 1;
 }
 
+function trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, close) {
+  const scale = close ? .76 : 1;
+  const base = Math.min(width, height) * (close ? .24 : .31);
+  const spin = time * .00155;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.globalCompositeOperation = "lighter";
+
+  for (let layer = 0; layer < 5; layer++) {
+    const size = base * scale * (1 + layer * .18 + Math.sin(time * .0012 + layer) * .025 - breach * .12);
+    const alpha = .16 + pull * .13 - layer * .018;
+    ctx.save();
+    ctx.rotate(spin * (layer % 2 ? -1.35 : 1) + layer * Math.PI / 11);
+    ctx.strokeStyle = layer % 2
+      ? "rgba(106,53,232," + Math.max(.04, alpha) + ")"
+      : "rgba(159,183,154," + Math.max(.05, alpha + .04) + ")";
+    ctx.lineWidth = 1.8 + layer * .65 + pull * 2.2;
+    ctx.shadowColor = layer % 2 ? hexAlpha(SC.ufoViolet, .38) : hexAlpha(SC.lime, .42);
+    ctx.shadowBlur = 20 + layer * 6 + pull * 24;
+    ctx.strokeRect(-size / 2, -size / 2, size, size);
+
+    ctx.setLineDash([size * .15, size * .07]);
+    ctx.lineDashOffset = -time * (.035 + layer * .012);
+    ctx.strokeStyle = layer % 2
+      ? "rgba(242,234,216," + (.12 + pull * .12) + ")"
+      : "rgba(159,183,154," + (.20 + pull * .16) + ")";
+    ctx.strokeRect(-size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+
+  for (let spoke = 0; spoke < 12; spoke++) {
+    const a = spin * 1.8 + spoke * Math.PI / 6;
+    const inner = base * .16;
+    const outer = base * (.56 + .08 * Math.sin(time * .002 + spoke));
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a) * inner, Math.sin(a) * inner);
+    ctx.lineTo(Math.cos(a) * outer, Math.sin(a) * outer);
+    ctx.strokeStyle = spoke % 3 === 0
+      ? "rgba(242,234,216,.18)"
+      : "rgba(159,183,154,.16)";
+    ctx.lineWidth = spoke % 3 === 0 ? 1.4 : .8;
+    ctx.stroke();
+  }
+
+  for (let i = 0; i < 18; i++) {
+    const a = -spin * 2.5 + i * 2.399;
+    const r = base * (.42 + seeded(i * 23) * .52);
+    const x = Math.cos(a) * r;
+    const y = Math.sin(a) * r;
+    const s = 3 + seeded(i * 31) * 6;
+    ctx.fillStyle = i % 4 === 0 ? "rgba(242,234,216,.34)" : "rgba(159,183,154,.28)";
+    ctx.fillRect(x - s / 2, y - s / 2, s, s);
+  }
+
+  ctx.restore();
+}
+
 function drawPortal(ctx, width, height, state, time) {
   const close = document.querySelector("#slide-20")?.classList.contains("is-current");
   const cx = width * (close ? .34 : .7) + (state.pointer.x-.5)*18;
@@ -2690,6 +2746,8 @@ function drawPortal(ctx, width, height, state, time) {
     ctx.restore();
   }
 
+  trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, close);
+
   // Game-dev vortex field: angular momentum made visible.
   if (!close || pull > .1) {
     for (let arm = 0; arm < 5; arm++) {
@@ -2789,19 +2847,20 @@ function drawPortal(ctx, width, height, state, time) {
     ctx.globalAlpha = 1;
   }
 
-  // Rabbit hook: gentle float at ambient, huge spiral on dive, then vanish.
-  const spinPhase = Math.min(1, portalPhase * 1.8);
+  // Rabbit hook: orbit at idle, tighten into a hard spiral on dive, then vanish.
+  const spinPhase = Math.max(.62 + Math.sin(time * .0011) * .06, Math.min(1, portalPhase * 1.8));
   const vanish = Math.max(0, Math.min(1, (diveClock - .66) / .30));
-  const spinRadius = (close ? 86 : 155) * (1 - vanish * .92);
-  const ambientBob = portalPhase < .05 ? Math.sin(time * .002) * 8 : 0;
-  const ambientSway = portalPhase < .05 ? Math.sin(time * .0015) * 6 : 0;
-  const spinAngle = -Math.PI / 2 + diveClock * Math.PI * 6.2 + time * .0012;
+  const idlePulse = portalPhase < .05 ? Math.sin(time * .0023) * 10 : 0;
+  const spinRadius = ((close ? 92 : 172) + idlePulse) * (1 - vanish * .92);
+  const ambientBob = Math.sin(time * .002) * 8 * (1 - pull);
+  const ambientSway = Math.sin(time * .0015) * 6 * (1 - pull);
+  const spinAngle = -Math.PI / 2 + diveClock * Math.PI * 6.2 + time * (portalPhase < .05 ? .0031 : .0016);
   const rabbitX = cx + Math.cos(spinAngle) * spinRadius * spinPhase + ambientSway;
   const rabbitY = cy + Math.sin(spinAngle) * spinRadius * .58 * spinPhase + vanish * 42 + ambientBob;
   const rabbitScale = (close ? .72 : 1.18) * (1 - vanish * .74);
   const rabbitAlpha = Math.max(0, .98 - vanish * 1.18);
   const rabbitRot = portalPhase < .05
-    ? Math.sin(time * .001) * .12
+    ? spinAngle + Math.PI / 2 + Math.sin(time * .002) * .18
     : spinAngle + Math.PI / 2 + diveClock * Math.PI * 3;
   if (rabbitAlpha > .03) {
     for(let ghost=4;ghost>0;ghost--){
