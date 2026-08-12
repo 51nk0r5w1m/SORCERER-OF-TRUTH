@@ -57,6 +57,78 @@ function meanFrameDelta(before, after) {
   return total / length;
 }
 
+async function bioPhotoMetrics(page) {
+  await page.locator("#slide-02 .bio-photo").scrollIntoViewIfNeeded();
+  await page.waitForFunction(() => {
+    const image = document.querySelector("#slide-02 .bio-photo img");
+    return image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
+  });
+
+  return page.evaluate(() => {
+    const photo = document.querySelector("#slide-02 .bio-photo");
+    const image = document.querySelector("#slide-02 .bio-photo img");
+    const canvas = document.querySelector("#slide-02 .scene-canvas");
+    const frame = document.querySelector("#slide-02 .frame");
+    if (!photo || !image) return { found: false };
+
+    const rect = photo.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    const imageStyle = getComputedStyle(image);
+    const canvasStyle = canvas ? getComputedStyle(canvas) : null;
+    const frameStyle = frame ? getComputedStyle(frame) : null;
+    const naturalRatio = image.naturalWidth / image.naturalHeight;
+    const renderedRatio = imageRect.width / imageRect.height;
+    return {
+      found: true,
+      loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height,
+      imageTop: imageRect.top,
+      imageBottom: imageRect.bottom,
+      imageWidth: imageRect.width,
+      imageHeight: imageRect.height,
+      objectFit: imageStyle.objectFit,
+      objectPosition: imageStyle.objectPosition,
+      naturalRatio,
+      renderedRatio,
+      canvasOpacity: canvasStyle ? Number(canvasStyle.opacity) : null,
+      canvasZIndex: canvasStyle?.zIndex,
+      frameZIndex: frameStyle?.zIndex,
+      visibleImageLeft: Math.max(rect.left, imageRect.left),
+      visibleImageRight: Math.min(rect.right, imageRect.right),
+      visibleImageTop: Math.max(rect.top, imageRect.top),
+      visibleImageBottom: Math.min(rect.bottom, imageRect.bottom),
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+    };
+  });
+}
+
+function expectChildFocalBioPhoto(result) {
+  expect(result.found).toBe(true);
+  expect(result.loaded).toBe(true);
+  expect(result.width).toBeGreaterThan(120);
+  expect(result.height).toBeGreaterThan(120);
+  expect(result.imageWidth).toBeGreaterThan(220);
+  expect(result.height, `bio photo should not dominate the phone viewport: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportHeight * .42);
+  expect(result.objectFit).toBe("cover");
+  expect(result.objectPosition).toBe("50% 82%");
+  expect(result.renderedRatio, `bio photo should use a wide mobile crop: ${JSON.stringify(result)}`).toBeGreaterThan(1.45);
+  expect(result.renderedRatio, `bio photo crop should stay near 16:10: ${JSON.stringify(result)}`).toBeLessThan(1.75);
+  expect(result.naturalRatio, `bio source should remain portrait-ish: ${JSON.stringify(result)}`).toBeLessThan(1.1);
+  expect(result.imageHeight, `cover image must fill crop container: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(result.height - 2);
+  expect(result.visibleImageBottom - result.visibleImageTop, `visible crop collapsed: ${JSON.stringify(result)}`).toBeGreaterThan(result.height - 3);
+  expect(Number(result.frameZIndex), `bio content must layer above scene canvas: ${JSON.stringify(result)}`).toBeGreaterThan(Number(result.canvasZIndex));
+  expect(result.left, `photo clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
+  expect(result.right, `photo clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
+  expect(result.top, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight);
+  expect(result.bottom, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeGreaterThan(0);
+}
+
 test.beforeEach(async ({ page }) => {
   await page.goto("./", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".slide").first()).toBeVisible();
@@ -172,64 +244,163 @@ test("memorial slide sign-off is fully visible", async ({ page }) => {
 
 test("bio photo is visible and not horizontally clipped on mobile", async ({ page }) => {
   await goTo(page, "slide-02");
-  await page.locator("#slide-02 .bio-photo").scrollIntoViewIfNeeded();
+  const result = await bioPhotoMetrics(page);
+  expectChildFocalBioPhoto(result);
+  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.12);
+});
+
+test("bio photo keeps the child focal crop in mobile slide view", async ({ page }) => {
+  await page.locator("#mobileViewToggle").click();
+  await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
+  await page.evaluate(() => {
+    const jump = document.querySelector("#jump");
+    jump.value = "slide-02";
+    jump.dispatchEvent(new Event("change", { bubbles: true }));
+  });
   await settle(page);
 
-  const result = await page.evaluate(() => {
-    const photo = document.querySelector("#slide-02 .bio-photo");
-    const image = document.querySelector("#slide-02 .bio-photo img");
-    const canvas = document.querySelector("#slide-02 .scene-canvas");
-    const frame = document.querySelector("#slide-02 .frame");
-    if (!photo || !image) return { found: false };
+  const result = await bioPhotoMetrics(page);
+  expectChildFocalBioPhoto(result);
+  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.12);
+});
 
-    const rect = photo.getBoundingClientRect();
-    const imageRect = image.getBoundingClientRect();
-    const imageStyle = getComputedStyle(image);
-    const canvasStyle = canvas ? getComputedStyle(canvas) : null;
-    const frameStyle = frame ? getComputedStyle(frame) : null;
-    const naturalRatio = image.naturalWidth / image.naturalHeight;
-    const renderedRatio = imageRect.width / imageRect.height;
+test("mobile reader title can open Truth-Tellers field notes", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+
+  const control = page.locator("#slide-01 .scene-controls button").first();
+  await expect(control).toBeVisible();
+  const box = await control.boundingBox();
+  expect(box.height).toBeGreaterThanOrEqual(44);
+  expect(box.width).toBeGreaterThanOrEqual(44);
+
+  await control.click();
+  await settle(page);
+  await expect(page.locator("#slide-01")).toHaveClass(/is-diving/);
+  const overlay = await page.locator("#slide-01 .cover-copy").evaluate((node) =>
+    getComputedStyle(node, "::after").content
+  );
+  expect(overlay).toContain("TRUTH-TELLERS FIELD NOTES");
+});
+
+test("mobile slide 03 title is readable and contained", async ({ page }) => {
+  await goTo(page, "slide-03");
+  const result = await page.locator("#slide-03 .copy h2").evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    const style = getComputedStyle(node);
     return {
-      found: true,
-      loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
       left: rect.left,
       right: rect.right,
-      top: rect.top,
-      bottom: rect.bottom,
       width: rect.width,
-      height: rect.height,
-      imageTop: imageRect.top,
-      imageBottom: imageRect.bottom,
-      imageWidth: imageRect.width,
-      imageHeight: imageRect.height,
-      objectFit: imageStyle.objectFit,
-      objectPosition: imageStyle.objectPosition,
-      naturalRatio,
-      renderedRatio,
-      canvasOpacity: canvasStyle ? Number(canvasStyle.opacity) : null,
-      canvasZIndex: canvasStyle?.zIndex,
-      frameZIndex: frameStyle?.zIndex,
       viewportWidth: window.innerWidth,
-      viewportHeight: window.innerHeight,
+      fontSize: parseFloat(style.fontSize),
+      scrollWidth: node.scrollWidth,
+      clientWidth: node.clientWidth,
     };
   });
 
-  expect(result.found).toBe(true);
-  expect(result.loaded).toBe(true);
-  expect(result.width).toBeGreaterThan(120);
-  expect(result.height).toBeGreaterThan(120);
-  expect(result.imageWidth).toBeGreaterThan(220);
-  expect(result.imageHeight).toBeGreaterThan(220);
-  expect(result.imageHeight, `bio photo dominates the phone viewport: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportHeight * .5);
-  expect(result.objectFit).toBe("contain");
-  expect(result.objectPosition).toBe("50% 50%");
-  expect(Math.abs(result.renderedRatio - result.naturalRatio), `bio photo should preserve the full image ratio: ${JSON.stringify(result)}`).toBeLessThan(.03);
-  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.12);
-  expect(Number(result.frameZIndex), `bio content must layer above scene canvas: ${JSON.stringify(result)}`).toBeGreaterThan(Number(result.canvasZIndex));
-  expect(result.left, `photo clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
-  expect(result.right, `photo clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
-  expect(result.top, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight);
-  expect(result.bottom, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeGreaterThan(0);
+  expect(result.left, `slide 03 title clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
+  expect(result.right, `slide 03 title clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
+  expect(result.scrollWidth, `slide 03 title overflows its box: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.clientWidth + 2);
+  expect(result.fontSize, `slide 03 title too large on mobile: ${JSON.stringify(result)}`).toBeLessThanOrEqual(52);
+});
+
+test("sky scan slide uses mobile viewport without dead poster space", async ({ page }) => {
+  await goTo(page, "slide-04");
+  const result = await page.evaluate(() => {
+    const slide = document.querySelector("#slide-04");
+    const frame = slide?.querySelector(".poster-frame");
+    const poster = slide?.querySelector(".poster-img");
+    const canvas = slide?.querySelector(".scene-canvas");
+    const heading = slide?.querySelector("h2");
+    const frameRect = frame?.getBoundingClientRect();
+    const posterRect = poster?.getBoundingClientRect();
+    const canvasRect = canvas?.getBoundingClientRect();
+    const headingRect = heading?.getBoundingClientRect();
+    return {
+      viewportWidth: window.innerWidth,
+      viewportHeight: window.innerHeight,
+      frameHeight: frameRect?.height || 0,
+      posterHeight: posterRect?.height || 0,
+      posterWidth: posterRect?.width || 0,
+      canvasHeight: canvasRect?.height || 0,
+      headingBottom: headingRect?.bottom || 0,
+      slideHeight: slide?.getBoundingClientRect().height || 0,
+    };
+  });
+
+  expect(result.posterWidth, `sky poster is too small to inspect: ${JSON.stringify(result)}`).toBeGreaterThan(180);
+  expect(result.posterHeight, `sky poster wastes too much vertical space: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportHeight * .36);
+  expect(result.canvasHeight, `sky physics canvas collapsed: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(260);
+  expect(result.headingBottom, `sky heading is not reachable in first mobile pass: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight);
+  expect(result.slideHeight, `sky slide is too sparse on mobile: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportHeight * 1.35);
+});
+
+test("mobile reader does not expose internal scrollbars", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+  const result = await page.evaluate(() => {
+    const nodes = [document.documentElement, document.body, ...document.querySelectorAll(".split-layout .copy, .ai-layout .copy, .reference-layout .copy, .case-copy, .closing-copy")];
+    const scrollingElement = document.scrollingElement;
+    const scrollContainers = [...document.querySelectorAll("body *")].filter((node) => {
+      const style = getComputedStyle(node);
+      return /(auto|scroll)/.test(`${style.overflow}${style.overflowX}${style.overflowY}`) &&
+        (node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1);
+    }).map((node) => ({
+      tag: node.tagName,
+      id: node.id,
+      className: node.className,
+      overflow: getComputedStyle(node).overflow,
+      overflowY: getComputedStyle(node).overflowY,
+      overflowX: getComputedStyle(node).overflowX,
+      scrollHeight: node.scrollHeight,
+      clientHeight: node.clientHeight,
+      scrollWidth: node.scrollWidth,
+      clientWidth: node.clientWidth,
+    }));
+    return nodes.map((node) => {
+      const style = getComputedStyle(node);
+      return {
+        tag: node.tagName,
+        className: node.className,
+        scrollbarWidth: style.scrollbarWidth,
+        msOverflowStyle: style.msOverflowStyle,
+      };
+    }).concat({
+      tag: "SCROLLING_ELEMENT",
+      className: scrollingElement?.className || "",
+      scrollbarWidth: getComputedStyle(scrollingElement).scrollbarWidth,
+      msOverflowStyle: getComputedStyle(scrollingElement).msOverflowStyle,
+      scrollWidth: scrollingElement.scrollWidth,
+      clientWidth: scrollingElement.clientWidth,
+      scrollContainers,
+    });
+  });
+
+  for (const item of result) {
+    expect(item.scrollbarWidth, `visible scrollbar policy on ${JSON.stringify(item)}`).toBe("none");
+  }
+  const scrollingElement = result.find((item) => item.tag === "SCROLLING_ELEMENT");
+  expect(scrollingElement.scrollWidth, `reader mode has horizontal document overflow: ${JSON.stringify(scrollingElement)}`).toBeLessThanOrEqual(scrollingElement.clientWidth + 1);
+  expect(scrollingElement.scrollContainers, `reader mode exposes internal scrollboxes: ${JSON.stringify(scrollingElement.scrollContainers)}`).toEqual([]);
+});
+
+test("mobile slide view hides viewport scrollbar chrome", async ({ page }) => {
+  await page.locator("#mobileViewToggle").click();
+  await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
+
+  const result = await page.evaluate(() => {
+    const html = getComputedStyle(document.documentElement);
+    const body = getComputedStyle(document.body);
+    return {
+      htmlScrollbarWidth: html.scrollbarWidth,
+      bodyScrollbarWidth: body.scrollbarWidth,
+      bodyOverflowY: body.overflowY,
+      canProgrammaticallyScroll: document.scrollingElement.scrollHeight > window.innerHeight,
+    };
+  });
+
+  expect(result.htmlScrollbarWidth, `html scrollbar visible in slide view: ${JSON.stringify(result)}`).toBe("none");
+  expect(result.bodyScrollbarWidth, `body scrollbar visible in slide view: ${JSON.stringify(result)}`).toBe("none");
+  expect(result.canProgrammaticallyScroll, `slide navigation still needs document scroll: ${JSON.stringify(result)}`).toBe(true);
 });
 
 test("speaker notes UI is suppressed on mobile", async ({ page }) => {
@@ -404,6 +575,10 @@ test("mobile reader mode preserves native touch scrolling", async ({ page }) => 
 
   const result = await page.evaluate(() => {
     const target = document.querySelector("#deck");
+    const titleCanvas = document.querySelector("#slide-01 .scene-canvas");
+    const titleState = window.__sceneState.get(titleCanvas);
+    const beforePulse = titleState.touchPulse || 0;
+    const beforePointer = { ...titleState.pointer };
     const touch = (y) => {
       const init = {
         identifier: 1,
@@ -434,10 +609,18 @@ test("mobile reader mode preserves native touch scrolling", async ({ page }) => 
       return event.defaultPrevented;
     };
 
+    const startPrevented = fire("touchstart", 600, "start");
+    const movePrevented = fire("touchmove", 420, "move");
+    const endPrevented = fire("touchend", 350, "end");
+
     return {
-      startPrevented: fire("touchstart", 600, "start"),
-      movePrevented: fire("touchmove", 420, "move"),
-      endPrevented: fire("touchend", 350, "end"),
+      startPrevented,
+      movePrevented,
+      endPrevented,
+      beforePulse,
+      afterPulse: titleState.touchPulse || 0,
+      beforePointer,
+      afterPointer: { ...titleState.pointer },
     };
   });
 
@@ -446,6 +629,8 @@ test("mobile reader mode preserves native touch scrolling", async ({ page }) => 
   expect(result.startPrevented).toBe(false);
   expect(result.movePrevented).toBe(false);
   expect(result.endPrevented).toBe(false);
+  expect(result.afterPulse, `mobile touchmove did not wake title physics: ${JSON.stringify(result)}`).toBeGreaterThan(result.beforePulse);
+  expect(result.afterPointer.y, `mobile touchmove did not update scene pointer: ${JSON.stringify(result)}`).not.toBe(result.beforePointer.y);
 
   const step = await page.locator("#slide-01").getAttribute("data-step");
   expect(step).toBe("0");
@@ -456,12 +641,19 @@ test("mobile reader mode preserves native touch scrolling", async ({ page }) => 
 });
 
 test("mobile users can opt into slide view", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".slide").first()).toBeVisible();
+
   await page.locator("#mobileViewToggle").click();
   await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
 
   const box = await page.locator("#slide-01 .scene-controls button").first().boundingBox();
+  const viewportHeight = await page.evaluate(() => window.innerHeight);
   expect(box.height).toBeGreaterThanOrEqual(44);
   expect(box.width).toBeGreaterThanOrEqual(44);
+  expect(box.y, `slide-view title control clipped at top: ${JSON.stringify(box)}`).toBeGreaterThanOrEqual(0);
+  expect(box.y + box.height, `slide-view title control clipped at bottom: ${JSON.stringify(box)}`).toBeLessThanOrEqual(viewportHeight);
 
   const before = await canvasSignature(page, "#slide-01 .scene-canvas");
   await page.locator("#slide-01 .scene-controls button").first().click();

@@ -167,6 +167,76 @@ test("active slide text stays readable without DOM overflow or collisions", asyn
   expect(problems).toEqual([]);
 });
 
+test("slide seven keeps revealed questions clear of the live case file", async ({ page }) => {
+  await goTo(page, "slide-07");
+  await page.evaluate(() => {
+    const slide = document.querySelector("#slide-07");
+    window.deckState?.setSlideStep(slide, Number(slide.dataset.maxStep || 0), { instant: true });
+  });
+  await settle(page);
+
+  const result = await page.evaluate(() => {
+    const slide = document.querySelector("#slide-07");
+    const grid = slide.querySelector(".question-grid");
+    const cards = [...slide.querySelectorAll(".question-grid article")];
+    const canvas = slide.querySelector(".scene-canvas");
+    const controls = slide.querySelector(".scene-controls");
+    const hud = slide.querySelector(".scene-hud");
+    const gridRect = grid.getBoundingClientRect();
+    const cardRects = cards.map((card) => {
+      const rect = card.getBoundingClientRect();
+      const style = getComputedStyle(card);
+      return {
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height,
+        background: style.backgroundColor,
+        opacity: Number(style.opacity),
+      };
+    });
+    const rectFor = (node) => {
+      const rect = node.getBoundingClientRect();
+      return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom, width: rect.width, height: rect.height };
+    };
+    const overlapArea = (a, b) => Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) *
+      Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+    const canvasStyle = getComputedStyle(canvas);
+    const caseFileReserve = innerWidth * .58;
+
+    return {
+      viewportWidth: innerWidth,
+      viewportHeight: innerHeight,
+      reserveLeft: caseFileReserve,
+      grid: { left: gridRect.left, right: gridRect.right, top: gridRect.top, bottom: gridRect.bottom, width: gridRect.width, height: gridRect.height },
+      cards: cardRects,
+      cardCount: cardRects.length,
+      canvasClipPath: canvasStyle.clipPath,
+      canvasOpacity: Number(canvasStyle.opacity),
+      controlsOverlap: overlapArea(rectFor(controls), { left: gridRect.left, right: gridRect.right, top: gridRect.top, bottom: gridRect.bottom }),
+      hudOverlap: overlapArea(rectFor(hud), { left: gridRect.left, right: gridRect.right, top: gridRect.top, bottom: gridRect.bottom }),
+      documentOverflow: document.documentElement.scrollWidth - innerWidth,
+    };
+  });
+
+  expect(result.cardCount).toBe(4);
+  expect(result.documentOverflow, `slide 07 created horizontal overflow: ${JSON.stringify(result)}`).toBeLessThanOrEqual(2);
+  expect(result.grid.right, `question grid intrudes into case-file reserve: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.reserveLeft + 6);
+  expect(result.controlsOverlap, `controls overlap slide 07 questions: ${JSON.stringify(result)}`).toBe(0);
+  expect(result.hudOverlap, `HUD overlaps slide 07 questions: ${JSON.stringify(result)}`).toBe(0);
+  expect(result.canvasClipPath, `case-file canvas is not reserved to the instrument side: ${JSON.stringify(result)}`).toContain("inset");
+  expect(result.canvasOpacity, `case-file canvas disappeared: ${JSON.stringify(result)}`).toBeGreaterThan(.5);
+
+  for (const card of result.cards) {
+    expect(card.left, `question card leaves left viewport: ${JSON.stringify(card)}`).toBeGreaterThanOrEqual(0);
+    expect(card.right, `question card crosses into case-file reserve: ${JSON.stringify(card)}`).toBeLessThanOrEqual(result.reserveLeft + 6);
+    expect(card.height, `question card collapsed: ${JSON.stringify(card)}`).toBeGreaterThanOrEqual(56);
+    expect(card.opacity, `question card is not revealed: ${JSON.stringify(card)}`).toBeGreaterThan(.9);
+  }
+});
+
 test("critical slides keep controls and text boxes clear of primary content", async ({ page }) => {
   const problems = [];
 
