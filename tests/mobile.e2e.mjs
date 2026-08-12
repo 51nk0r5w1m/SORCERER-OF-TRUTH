@@ -219,12 +219,12 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
   expect(result.width).toBeGreaterThan(120);
   expect(result.height).toBeGreaterThan(120);
   expect(result.imageWidth).toBeGreaterThan(220);
-  expect(result.imageHeight).toBeGreaterThan(120);
-  expect(result.imageHeight, `bio photo dominates the phone viewport: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight * .36);
-  expect(result.objectFit).toBe("cover");
-  expect(result.objectPosition).toBe("50% 100%");
-  expect(result.renderedRatio, `bio photo must stay a child-focal phone banner crop: ${JSON.stringify(result)}`).toBeGreaterThan(1.65);
-  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.1);
+  expect(result.imageHeight).toBeGreaterThan(220);
+  expect(result.imageHeight, `bio photo dominates the phone viewport: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportHeight * .5);
+  expect(result.objectFit).toBe("contain");
+  expect(result.objectPosition).toBe("50% 50%");
+  expect(Math.abs(result.renderedRatio - result.naturalRatio), `bio photo should preserve the full image ratio: ${JSON.stringify(result)}`).toBeLessThan(.03);
+  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.12);
   expect(Number(result.frameZIndex), `bio content must layer above scene canvas: ${JSON.stringify(result)}`).toBeGreaterThan(Number(result.canvasZIndex));
   expect(result.left, `photo clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
   expect(result.right, `photo clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
