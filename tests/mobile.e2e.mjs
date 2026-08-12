@@ -178,11 +178,15 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
   const result = await page.evaluate(() => {
     const photo = document.querySelector("#slide-02 .bio-photo");
     const image = document.querySelector("#slide-02 .bio-photo img");
+    const canvas = document.querySelector("#slide-02 .scene-canvas");
+    const frame = document.querySelector("#slide-02 .frame");
     if (!photo || !image) return { found: false };
 
     const rect = photo.getBoundingClientRect();
     const imageRect = image.getBoundingClientRect();
     const imageStyle = getComputedStyle(image);
+    const canvasStyle = canvas ? getComputedStyle(canvas) : null;
+    const frameStyle = frame ? getComputedStyle(frame) : null;
     const naturalRatio = image.naturalWidth / image.naturalHeight;
     const renderedRatio = imageRect.width / imageRect.height;
     return {
@@ -199,8 +203,12 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
       imageWidth: imageRect.width,
       imageHeight: imageRect.height,
       objectFit: imageStyle.objectFit,
+      objectPosition: imageStyle.objectPosition,
       naturalRatio,
       renderedRatio,
+      canvasOpacity: canvasStyle ? Number(canvasStyle.opacity) : null,
+      canvasZIndex: canvasStyle?.zIndex,
+      frameZIndex: frameStyle?.zIndex,
       viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
     };
@@ -214,6 +222,8 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
   expect(result.imageHeight).toBeGreaterThan(220);
   expect(result.objectFit).toBe("contain");
   expect(Math.abs(result.renderedRatio - result.naturalRatio), `bio photo appears cropped or distorted: ${JSON.stringify(result)}`).toBeLessThan(.03);
+  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.12);
+  expect(Number(result.frameZIndex), `bio content must layer above scene canvas: ${JSON.stringify(result)}`).toBeGreaterThan(Number(result.canvasZIndex));
   expect(result.left, `photo clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
   expect(result.right, `photo clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
   expect(result.top, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight);
