@@ -173,7 +173,8 @@ test("slide seven keeps revealed questions clear of the live case file", async (
     const slide = document.querySelector("#slide-07");
     window.deckState?.setSlideStep(slide, Number(slide.dataset.maxStep || 0), { instant: true });
   });
-  await settle(page);
+  await page.waitForFunction(() => [...document.querySelectorAll("#slide-07 .question-grid article")]
+    .every((card) => Number(getComputedStyle(card).opacity) > .9));
 
   const result = await page.evaluate(() => {
     const slide = document.querySelector("#slide-07");
