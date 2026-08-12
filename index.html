@@ -466,6 +466,17 @@ img { display: block; max-width: 100%; }
   min-width: 0;
   max-height: calc(100vh - 128px);
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.split-layout .copy::-webkit-scrollbar,
+.ai-layout .copy::-webkit-scrollbar,
+.reference-layout .copy::-webkit-scrollbar,
+.case-copy::-webkit-scrollbar,
+.closing-copy::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 .split-layout li { margin: .5rem 0; }
 .framework-layout {

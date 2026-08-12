@@ -238,6 +238,37 @@ test("slide seven keeps revealed questions clear of the live case file", async (
   }
 });
 
+test("case slides hide internal scrollbar chrome without losing content", async ({ page }) => {
+  const results = [];
+
+  for (const slideId of ["slide-09", "slide-13", "slide-15"]) {
+    await goTo(page, slideId);
+    results.push(await page.evaluate((slideId) => {
+      const copy = document.querySelector(`#${slideId} .case-copy`);
+      const style = getComputedStyle(copy);
+      const rect = copy.getBoundingClientRect();
+      return {
+        slideId,
+        scrollbarWidth: style.scrollbarWidth,
+        msOverflowStyle: style.msOverflowStyle,
+        overflowY: style.overflowY,
+        scrollHeight: copy.scrollHeight,
+        clientHeight: copy.clientHeight,
+        rectBottom: rect.bottom,
+        viewportHeight: innerHeight,
+      };
+    }, slideId));
+  }
+
+  for (const result of results) {
+    expect(result.scrollbarWidth, `${result.slideId} exposes Firefox scrollbar chrome: ${JSON.stringify(result)}`).toBe("none");
+    expect(result.msOverflowStyle ?? "none", `${result.slideId} exposes legacy scrollbar chrome: ${JSON.stringify(result)}`).toBe("none");
+    expect(result.overflowY, `${result.slideId} lost its overflow behavior: ${JSON.stringify(result)}`).toBe("auto");
+    expect(result.clientHeight, `${result.slideId} copy panel collapsed: ${JSON.stringify(result)}`).toBeGreaterThan(120);
+    expect(result.rectBottom, `${result.slideId} copy panel falls off the viewport: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportHeight + 2);
+  }
+});
+
 test("critical slides keep controls and text boxes clear of primary content", async ({ page }) => {
   const problems = [];
 

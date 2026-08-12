@@ -422,32 +422,38 @@ test("mobile reader removes dead progress and slide scrollboxes", async ({ page 
   await expect(page.locator("body")).toHaveClass(/mobile-reader/);
   await expect(page.locator(".progress")).toBeHidden();
 
-  await goTo(page, "slide-09");
-  const result = await page.evaluate(() => {
-    const topbar = getComputedStyle(document.querySelector(".topbar"));
-    const progress = getComputedStyle(document.querySelector(".progress"));
-    const scrollboxes = [...document.querySelectorAll("#slide-09 *")].filter((node) => {
-      const style = getComputedStyle(node);
-      return /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1;
-    }).map((node) => ({
-      tag: node.tagName,
-      className: node.className,
-      overflowY: getComputedStyle(node).overflowY,
-      scrollHeight: node.scrollHeight,
-      clientHeight: node.clientHeight,
-    }));
+  const results = [];
+  for (const slideId of ["slide-09", "slide-13", "slide-15"]) {
+    await goTo(page, slideId);
+    results.push(await page.evaluate((slideId) => {
+      const topbar = getComputedStyle(document.querySelector(".topbar"));
+      const progress = getComputedStyle(document.querySelector(".progress"));
+      const scrollboxes = [...document.querySelectorAll(`#${slideId} *`)].filter((node) => {
+        const style = getComputedStyle(node);
+        return /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1;
+      }).map((node) => ({
+        tag: node.tagName,
+        className: node.className,
+        overflowY: getComputedStyle(node).overflowY,
+        scrollHeight: node.scrollHeight,
+        clientHeight: node.clientHeight,
+      }));
 
-    return {
-      progressDisplay: progress.display,
-      topbarTop: topbar.top,
-      bodyScrollbarWidth: topbar.getPropertyValue("scrollbar-width"),
-      scrollboxes,
-    };
-  });
+      return {
+        slideId,
+        progressDisplay: progress.display,
+        topbarTop: topbar.top,
+        bodyScrollbarWidth: topbar.getPropertyValue("scrollbar-width"),
+        scrollboxes,
+      };
+    }, slideId));
+  }
 
-  expect(result.progressDisplay).toBe("none");
-  expect(result.topbarTop).toBe("0px");
-  expect(result.scrollboxes).toEqual([]);
+  for (const result of results) {
+    expect(result.progressDisplay).toBe("none");
+    expect(result.topbarTop).toBe("0px");
+    expect(result.scrollboxes, `${result.slideId} exposes mobile scrollboxes`).toEqual([]);
+  }
 });
 
 test("mobile reader keeps animated scene physics alive during thumb scroll", async ({ page }) => {
