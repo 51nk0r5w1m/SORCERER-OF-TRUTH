@@ -1642,7 +1642,7 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
     min-height: 24rem;
     opacity: .42;
     filter: saturate(1.16) contrast(1.12);
-    pointer-events: none;
+    pointer-events: auto;
     touch-action: pan-y;
     clip-path: none !important;
     mix-blend-mode: normal;
@@ -1708,7 +1708,6 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
     line-height: 1.48;
   }
   body.mobile-reader .cover-art img,
-  body.mobile-reader .bio-photo img,
   body.mobile-reader .side-art img,
   body.mobile-reader .case-art img,
   body.mobile-reader .reference-art img,
@@ -1717,6 +1716,19 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
     height: auto;
     max-height: 48vh;
     object-fit: contain;
+  }
+  body.mobile-reader .bio-photo {
+    width: min(100%, 24rem);
+    margin: 0 auto;
+    overflow: visible;
+  }
+  body.mobile-reader .bio-photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+    object-position: center center;
   }
   body.mobile-reader .poster-img,
   body.mobile-reader #slide-04.slide-live .poster-img {
@@ -2004,6 +2016,8 @@ let notesVisible = false;
 let wheelLocked = false;
 let touchStartY = 0;
 let scrollSyncQueued = false;
+let lastMobileScrollY = window.scrollY;
+let lastMobileScrollTime = performance.now();
 const exportMode = new URLSearchParams(location.search).has("export");
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const mobileQuery = window.matchMedia("(max-width: 860px)");
@@ -2254,7 +2268,10 @@ deck.addEventListener("click", (event) => {
   advance();
 });
 deck.addEventListener("touchstart", (event) => {
-  if (isMobileReader()) return;
+  if (isMobileReader()) {
+    wakeMobileTouchScenes(event);
+    return;
+  }
   event.preventDefault();
   touchStartY = event.changedTouches[0]?.clientY || 0;
 }, { passive: false });
@@ -2273,6 +2290,7 @@ window.addEventListener("scroll", () => {
   scrollSyncQueued = true;
   requestAnimationFrame(() => {
     scrollSyncQueued = false;
+    wakeMobileScrollScenes();
     syncCurrentFromScroll();
   });
 }, { passive: true });
@@ -2574,17 +2592,17 @@ function rabbit(ctx, x, y, scale, alpha) {
   ctx.restore(); ctx.globalAlpha = 1;
 }
 
-function trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, close) {
+function trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, close, tactile) {
   const scale = close ? .76 : 1;
   const base = Math.min(width, height) * (close ? .24 : .31);
-  const spin = time * .00155;
+  const spin = time * (.00155 + tactile * .0014);
   ctx.save();
   ctx.translate(cx, cy);
   ctx.globalCompositeOperation = "lighter";
 
   for (let layer = 0; layer < 5; layer++) {
-    const size = base * scale * (1 + layer * .18 + Math.sin(time * .0012 + layer) * .025 - breach * .12);
-    const alpha = .16 + pull * .13 - layer * .018;
+    const size = base * scale * (1 + layer * .18 + Math.sin(time * .0012 + layer) * .025 + tactile * .08 - breach * .12);
+    const alpha = .16 + pull * .13 + tactile * .18 - layer * .018;
     ctx.save();
     ctx.rotate(spin * (layer % 2 ? -1.35 : 1) + layer * Math.PI / 11);
     ctx.strokeStyle = layer % 2
@@ -2598,8 +2616,8 @@ function trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, clos
     ctx.setLineDash([size * .15, size * .07]);
     ctx.lineDashOffset = -time * (.035 + layer * .012);
     ctx.strokeStyle = layer % 2
-      ? "rgba(242,234,216," + (.12 + pull * .12) + ")"
-      : "rgba(159,183,154," + (.20 + pull * .16) + ")";
+      ? "rgba(242,234,216," + (.12 + pull * .12 + tactile * .12) + ")"
+      : "rgba(159,183,154," + (.20 + pull * .16 + tactile * .18) + ")";
     ctx.strokeRect(-size / 2, -size / 2, size, size);
     ctx.restore();
   }
@@ -2631,16 +2649,119 @@ function trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, clos
   ctx.restore();
 }
 
+function mobileTitleSuction(state, time) {
+  if (!isMobileReader() || state.kind !== "portal") return 0;
+  const slide = document.querySelector("#slide-01");
+  if (!slide) return 0;
+  const rect = slide.getBoundingClientRect();
+  const viewport = window.innerHeight || document.documentElement.clientHeight || 1;
+  if (rect.bottom <= 0 || rect.top >= viewport) return 0;
+  const raw = -rect.top / Math.max(1, Math.min(rect.height, viewport) * .82);
+  const scrollPull = Math.max(0, Math.min(1, raw));
+  const edgePull = Math.max(0, Math.min(1, (viewport - rect.bottom) / Math.max(1, viewport * .62)));
+  const impulseAge = Math.max(0, time - (state.scrollAt || 0));
+  const impulse = Math.max(0, (state.scrollImpulse || 0) * Math.exp(-impulseAge / 360));
+  state.scrollImpulse = impulse;
+  const suction = Math.max(scrollPull, edgePull * .7, impulse * .68);
+  state.scrollPull = suction;
+  state.motionUntil = Math.max(state.motionUntil || 0, time + (suction > .01 ? 260 : 0));
+  return suction;
+}
+
+function drawMobilePortalSuction(ctx, width, height, cx, cy, time, suction) {
+  if (suction <= .01) return;
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+
+  const baseY = height * (1.06 - suction * .20);
+  const mouth = Math.min(width, height) * (.23 + suction * .12);
+  const left = Math.max(-width * .18, cx - width * (.72 - suction * .16));
+  const right = Math.min(width * 1.18, cx + width * (.28 + suction * .12));
+
+  const beam = ctx.createLinearGradient(cx, cy, cx - width * .14, baseY);
+  beam.addColorStop(0, "rgba(57,255,20," + (.34 + suction * .32) + ")");
+  beam.addColorStop(.46, "rgba(118,87,214," + (.16 + suction * .22) + ")");
+  beam.addColorStop(1, "rgba(57,255,20,0)");
+  ctx.beginPath();
+  ctx.moveTo(cx - mouth * .22, cy + mouth * .08);
+  ctx.quadraticCurveTo(width * .58, height * .68, right, baseY);
+  ctx.lineTo(left, baseY);
+  ctx.quadraticCurveTo(width * .42, height * .62, cx + mouth * .18, cy + mouth * .08);
+  ctx.closePath();
+  ctx.fillStyle = beam;
+  ctx.fill();
+
+  for (let i = 0; i < 12; i++) {
+    const seed = seeded(900 + i * 19);
+    const drift = ((time * (.00034 + i * .000018) + seed) % 1);
+    const sx = left + (right - left) * seed + Math.sin(time * .0012 + i) * 18;
+    const sy = baseY - drift * (baseY - cy + 90);
+    const tx = cx + Math.sin(time * .002 + i) * mouth * .18;
+    const ty = cy + Math.cos(time * .0017 + i) * mouth * .08;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.quadraticCurveTo((sx + tx) * .5 + Math.sin(i) * 26, (sy + ty) * .5, tx, ty);
+    ctx.strokeStyle = i % 3 === 0
+      ? "rgba(57,255,20," + (.14 + suction * .24) + ")"
+      : "rgba(240,237,228," + (.10 + suction * .18) + ")";
+    ctx.lineWidth = .7 + suction * 1.8;
+    ctx.stroke();
+  }
+
+  for (let i = 0; i < 28; i++) {
+    const seed = seeded(1300 + i * 23);
+    const phase = (time * (.00045 + (i % 5) * .000035) + seed + suction * .18) % 1;
+    const startX = left + (right - left) * seeded(1600 + i * 31);
+    const startY = baseY + seeded(1700 + i * 37) * height * .16;
+    const bend = Math.sin(time * .0018 + i) * width * .05;
+    const x = startX + (cx - startX) * phase + bend * (1 - phase);
+    const y = startY + (cy - startY) * Math.pow(phase, .82);
+    const size = (3 + seeded(1800 + i * 41) * 12) * (1 - phase * .48) * (1 + suction * .34);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(time * (.002 + i * .00014));
+    ctx.fillStyle = i % 4 === 0
+      ? "rgba(240,237,228," + (.24 + suction * .36) + ")"
+      : i % 4 === 1
+        ? "rgba(57,255,20," + (.22 + suction * .34) + ")"
+        : "rgba(255,122,87," + (.18 + suction * .24) + ")";
+    ctx.fillRect(-size / 2, -size / 2, size, Math.max(2, size * .55));
+    ctx.restore();
+  }
+
+  for (let layer = 0; layer < 3; layer++) {
+    const size = Math.min(width, height) * (.64 + layer * .22 + suction * .18);
+    ctx.save();
+    ctx.translate(cx + Math.sin(time * .001 + layer) * suction * 18, cy);
+    ctx.rotate(time * (.0014 + layer * .00055) * (layer % 2 ? -1 : 1));
+    ctx.strokeStyle = layer % 2
+      ? "rgba(118,87,214," + (.14 + suction * .20) + ")"
+      : "rgba(57,255,20," + (.16 + suction * .24) + ")";
+    ctx.lineWidth = 1.4 + suction * 2.2;
+    ctx.setLineDash([size * .1, size * .035]);
+    ctx.lineDashOffset = -time * (.038 + layer * .012);
+    ctx.strokeRect(-size / 2, -size / 2, size, size);
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
 function drawPortal(ctx, width, height, state, time) {
   const close = document.querySelector("#slide-20")?.classList.contains("is-current");
-  const cx = width * (close ? .34 : .7) + (state.pointer.x-.5)*18;
-  const cy = height * .47 + (state.pointer.y-.5)*12;
+  const tactileAge = Math.max(0, time - (state.touchAt || 0));
+  const tactile = Math.max(0, (state.touchPulse || 0) * Math.exp(-tactileAge / 520));
+  state.touchPulse = tactile;
+  const scrollSuction = mobileTitleSuction(state, time);
+  const tactileForce = Math.max(tactile, scrollSuction * 1.35);
+  const cx = width * (close ? .34 : .7) + (state.pointer.x-.5)*(18 + tactileForce * 78) - scrollSuction * width * .08;
+  const cy = height * .47 + (state.pointer.y-.5)*(12 + tactileForce * 48) - scrollSuction * height * .10;
   const depth = motionValue(state,"depth",time);
   const diveClock = state.depthTo > 0 ? Math.max(0, Math.min(1, (time - (state.depthStarted || time)) / 2200)) : depth;
   const portalPhase = Math.max(depth, diveClock);
 
   // Phase breakdown: 0-0.3 = ambient, 0.3-0.7 = pull, 0.7-1.0 = breach
-  const pull = Math.max(0, Math.min(1, (portalPhase-.1)/.5));
+  const pull = Math.max(scrollSuction * .86, Math.max(0, Math.min(1, (portalPhase-.1)/.5)));
   const breach = Math.max(0, Math.min(1, (portalPhase-.58)/.42));
 
   // Screen shake during breach
@@ -2751,7 +2872,9 @@ function drawPortal(ctx, width, height, state, time) {
     ctx.restore();
   }
 
-  trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, close);
+  drawMobilePortalSuction(ctx, width, height, cx, cy, time, Math.max(scrollSuction, tactile * .55));
+
+  trippyPortalSquare(ctx, cx, cy, width, height, time, pull, breach, close, tactileForce);
 
   // Game-dev vortex field: angular momentum made visible.
   if (!close || pull > .1) {
@@ -2853,13 +2976,13 @@ function drawPortal(ctx, width, height, state, time) {
   }
 
   // Rabbit hook: orbit at idle, tighten into a hard spiral on dive, then vanish.
-  const spinPhase = Math.max(.62 + Math.sin(time * .0011) * .06, Math.min(1, portalPhase * 1.8));
+  const spinPhase = Math.max(.62 + tactileForce * .24 + Math.sin(time * .0011) * .06, Math.min(1, portalPhase * 1.8));
   const vanish = Math.max(0, Math.min(1, (diveClock - .66) / .30));
   const idlePulse = portalPhase < .05 ? Math.sin(time * .0023) * 10 : 0;
-  const spinRadius = ((close ? 92 : 172) + idlePulse) * (1 - vanish * .92);
+  const spinRadius = ((close ? 92 : 172) + idlePulse + tactileForce * 36 - scrollSuction * 42) * (1 - vanish * .92);
   const ambientBob = Math.sin(time * .002) * 8 * (1 - pull);
   const ambientSway = Math.sin(time * .0015) * 6 * (1 - pull);
-  const spinAngle = -Math.PI / 2 + diveClock * Math.PI * 6.2 + time * (portalPhase < .05 ? .0031 : .0016);
+  const spinAngle = -Math.PI / 2 + diveClock * Math.PI * 6.2 + time * (portalPhase < .05 ? .0031 + tactileForce * .0024 : .0016 + tactileForce * .0018);
   const rabbitX = cx + Math.cos(spinAngle) * spinRadius * spinPhase + ambientSway;
   const rabbitY = cy + Math.sin(spinAngle) * spinRadius * .58 * spinPhase + vanish * 42 + ambientBob;
   const rabbitScale = (close ? .72 : 1.18) * (1 - vanish * .74);
@@ -5041,29 +5164,47 @@ function drawChecklistScene(ctx,width,height,state,time){
 }
 
 function drawMobileKineticOverlay(ctx,width,height,state,time){
-  if(!isMobileReader())return;
-  const t=time*.001+(state.seed||0);
+  const mobileReader=isMobileReader();
+  const mobileViewport=matchMedia("(max-width: 860px)").matches;
+  if(!mobileReader&&!mobileViewport)return;
+  const slideViewBoost=mobileReader?1.15:2.75;
+  const t=time*.001*slideViewBoost+(state.seed||0);
   const cx=width*.5,cy=height*.45;
   ctx.save();
   ctx.globalCompositeOperation="screen";
-  ctx.lineWidth=1.2;
-  for(let ring=0;ring<4;ring++){
+  ctx.lineWidth=1.15*slideViewBoost;
+  for(let ring=0;ring<5;ring++){
     const phase=t*(.28+ring*.06)+ring*1.7;
     const rx=width*(.18+ring*.09)+Math.sin(phase)*18;
     const ry=height*(.11+ring*.045)+Math.cos(phase*.83)*12;
     ctx.beginPath();
     ctx.ellipse(cx+Math.sin(phase*.71)*22,cy+Math.cos(phase*.63)*18,rx,ry,phase*.18,0,Math.PI*2);
-    ctx.strokeStyle=ring%2?"rgba(180,139,255,.18)":"rgba(255,122,87,.18)";
+    const ringAlpha=Math.min(.34,.18*slideViewBoost);
+    ctx.strokeStyle=ring%2?"rgba(180,139,255,"+ringAlpha+")":"rgba(255,122,87,"+ringAlpha+")";
     ctx.stroke();
   }
-  for(let i=0;i<26;i++){
+  for(let layer=0;layer<3;layer++){
+    const size=Math.min(width,height)*(.42+layer*.16+Math.sin(t*1.4+layer)*.025);
+    ctx.save();
+    ctx.translate(cx+Math.sin(t*.9+layer)*18,cy+Math.cos(t*.8+layer)*14);
+    ctx.rotate(t*(.32+layer*.11)*(layer%2?-1:1));
+    ctx.setLineDash([size*.12,size*.045]);
+    ctx.lineDashOffset=-time*(.028+layer*.008);
+    ctx.strokeStyle=layer%2?"rgba(242,234,216,.26)":"rgba(159,183,154,.30)";
+    ctx.strokeRect(-size/2,-size/2,size,size);
+    ctx.restore();
+  }
+  for(let i=0;i<34;i++){
     const phase=t*(.45+(i%5)*.06)+i*.73;
     const orbit=.16+((i*37)%100)/260;
     const wobble=Math.sin(phase*1.9)*18;
     const x=cx+Math.cos(phase)*width*orbit+wobble;
     const y=cy+Math.sin(phase*.83)*height*(orbit*.74);
     const pulse=(Math.sin(phase*2.7)+1)/2;
-    ctx.fillStyle=i%3===0?`rgba(159,183,154,${.22+pulse*.24})`:i%3===1?`rgba(255,122,87,${.16+pulse*.22})`:`rgba(180,139,255,${.14+pulse*.2})`;
+    const a1=Math.min(.72,(.22+pulse*.24)*slideViewBoost);
+    const a2=Math.min(.62,(.16+pulse*.22)*slideViewBoost);
+    const a3=Math.min(.56,(.14+pulse*.2)*slideViewBoost);
+    ctx.fillStyle=i%3===0?`rgba(159,183,154,${a1})`:i%3===1?`rgba(255,122,87,${a2})`:`rgba(180,139,255,${a3})`;
     ctx.beginPath();
     ctx.arc(x,y,1.4+pulse*2.3,0,Math.PI*2);
     ctx.fill();
@@ -5073,15 +5214,15 @@ function drawMobileKineticOverlay(ctx,width,height,state,time){
       ctx.beginPath();
       ctx.moveTo(x,y);
       ctx.lineTo(tx,ty);
-      ctx.strokeStyle="rgba(242,234,216,.12)";
+      ctx.strokeStyle="rgba(242,234,216,"+Math.min(.24,.12*slideViewBoost)+")";
       ctx.stroke();
     }
   }
   const sweep=(t*.18%1)*Math.PI*2;
   const radius=Math.max(width,height)*.62;
   const beam=ctx.createRadialGradient(cx,cy,0,cx,cy,radius);
-  beam.addColorStop(0,"rgba(159,183,154,.18)");
-  beam.addColorStop(.42,"rgba(255,122,87,.08)");
+  beam.addColorStop(0,"rgba(159,183,154,"+Math.min(.32,.18*slideViewBoost)+")");
+  beam.addColorStop(.42,"rgba(255,122,87,"+Math.min(.18,.08*slideViewBoost)+")");
   beam.addColorStop(1,"rgba(5,5,7,0)");
   ctx.fillStyle=beam;
   ctx.beginPath();
@@ -5263,10 +5404,16 @@ for(const canvas of sceneCanvases){
   const state=sceneState.get(canvas);
   canvas.addEventListener("pointermove",event=>{
     const rect=canvas.getBoundingClientRect();state.pointer.x=(event.clientX-rect.left)/rect.width;state.pointer.y=(event.clientY-rect.top)/rect.height;
+    if(isMobileReader()||matchMedia("(max-width: 860px)").matches){
+      state.touchPulse=Math.min(2.4,(state.touchPulse||0)+.26);
+      state.touchAt=performance.now();
+      state.motionUntil=performance.now()+900;
+    }
     if(state.dragStart&&Math.hypot(event.clientX-state.dragStart.x,event.clientY-state.dragStart.y)>6)window.__deckDragged=true;
     if(state.drag){state.drag.node.x=state.pointer.x;state.drag.node.y=state.pointer.y;state.drag.node.tx=state.pointer.x;state.drag.node.ty=state.pointer.y;}
   });
   canvas.addEventListener("pointerdown",event=>{
+    if(isMobileReader()||matchMedia("(max-width: 860px)").matches)wakeMobileTouchScenes(event);
     if(state.kind!=="graph")return;
     const hit=(state.hit||[]).find(item=>Math.hypot(event.offsetX-item.x,event.offsetY-item.y)<item.r);
     if(hit){state.drag=hit;state.dragStart={x:event.clientX,y:event.clientY};window.__deckDragged=false;canvas.setPointerCapture(event.pointerId);}
@@ -5288,6 +5435,45 @@ document.addEventListener("pointermove",event=>{
 
 const continuousScenes=new Set(["portal","whois","graph","sky","protocol","jwt","default","model","hash","territory","cors","consensus","ai","humans","oauth","stack","machine","cropmap","checklist"]);
 let sceneFrameId=0;
+
+function wakeMobileScrollScenes(now=performance.now()){
+  if(!isMobileReader()||reducedMotion)return;
+  const y=window.scrollY;
+  const dy=y-lastMobileScrollY;
+  const dt=Math.max(16,now-lastMobileScrollTime);
+  lastMobileScrollY=y;
+  lastMobileScrollTime=now;
+  const impulse=Math.min(1.8,Math.abs(dy)/Math.max(28,dt*.42));
+  if(impulse<.02)return;
+  sceneCanvases.forEach(canvas=>{
+    const rect=canvas.getBoundingClientRect();
+    if(rect.bottom<-180||rect.top>innerHeight+180)return;
+    const state=sceneState.get(canvas);
+    state.scrollImpulse=Math.max(state.scrollImpulse||0,impulse);
+    state.scrollDir=dy>=0?1:-1;
+    state.scrollAt=now;
+    state.motionUntil=Math.max(state.motionUntil||0,now+900);
+  });
+  if(!sceneFrameId)sceneFrameId=requestAnimationFrame(sceneFrame);
+}
+
+function wakeMobileTouchScenes(event,now=performance.now()){
+  if(!isMobileReader()||reducedMotion)return;
+  const touch=event?.changedTouches?.[0]||event;
+  sceneCanvases.forEach(canvas=>{
+    const rect=canvas.getBoundingClientRect();
+    if(rect.bottom<-180||rect.top>innerHeight+180)return;
+    const state=sceneState.get(canvas);
+    if(touch&&rect.width&&rect.height){
+      state.pointer.x=Math.max(0,Math.min(1,(touch.clientX-rect.left)/rect.width));
+      state.pointer.y=Math.max(0,Math.min(1,(touch.clientY-rect.top)/rect.height));
+    }
+    state.touchPulse=Math.min(2.4,(state.touchPulse||0)+.42);
+    state.touchAt=now;
+    state.motionUntil=Math.max(state.motionUntil||0,now+900);
+  });
+  if(!sceneFrameId)sceneFrameId=requestAnimationFrame(sceneFrame);
+}
 
 function stopSceneLoop(){
   if(sceneFrameId)cancelAnimationFrame(sceneFrameId);

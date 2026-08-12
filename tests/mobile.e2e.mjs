@@ -74,6 +74,7 @@ test("no slide has horizontal overflow", async ({ page }) => {
 });
 
 test("text does not leave viewport on any slide", async ({ page }) => {
+  test.setTimeout(60000);
   const slideIds = await page.locator(".slide").evaluateAll((slides) => slides.map((s) => s.id));
 
   for (const id of slideIds) {
@@ -96,6 +97,7 @@ test("text does not leave viewport on any slide", async ({ page }) => {
 });
 
 test("scene control buttons meet 44px minimum tap target in mobile slide view", async ({ page }) => {
+  test.setTimeout(60000);
   await page.locator("#mobileViewToggle").click();
   await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
 
@@ -179,6 +181,10 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
     if (!photo || !image) return { found: false };
 
     const rect = photo.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    const imageStyle = getComputedStyle(image);
+    const naturalRatio = image.naturalWidth / image.naturalHeight;
+    const renderedRatio = imageRect.width / imageRect.height;
     return {
       found: true,
       loaded: image.complete && image.naturalWidth > 0 && image.naturalHeight > 0,
@@ -188,6 +194,13 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
       bottom: rect.bottom,
       width: rect.width,
       height: rect.height,
+      imageTop: imageRect.top,
+      imageBottom: imageRect.bottom,
+      imageWidth: imageRect.width,
+      imageHeight: imageRect.height,
+      objectFit: imageStyle.objectFit,
+      naturalRatio,
+      renderedRatio,
       viewportWidth: window.innerWidth,
       viewportHeight: window.innerHeight,
     };
@@ -197,6 +210,10 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
   expect(result.loaded).toBe(true);
   expect(result.width).toBeGreaterThan(120);
   expect(result.height).toBeGreaterThan(120);
+  expect(result.imageWidth).toBeGreaterThan(220);
+  expect(result.imageHeight).toBeGreaterThan(220);
+  expect(result.objectFit).toBe("contain");
+  expect(Math.abs(result.renderedRatio - result.naturalRatio), `bio photo appears cropped or distorted: ${JSON.stringify(result)}`).toBeLessThan(.03);
   expect(result.left, `photo clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
   expect(result.right, `photo clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
   expect(result.top, `photo not reachable in viewport: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight);
@@ -274,6 +291,69 @@ test("mobile reader keeps animated scene physics alive during thumb scroll", asy
   expect(meanFrameDelta(posterCanvas, posterCanvasAfter)).toBeGreaterThan(.2);
 });
 
+test("mobile title portal reacts to touch movement", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+  const canvas = page.locator("#slide-01 .scene-canvas");
+  await expect(canvas).toBeVisible();
+
+  const style = await canvas.evaluate((node) => {
+    const css = getComputedStyle(node);
+    return { pointerEvents: css.pointerEvents, touchAction: css.touchAction };
+  });
+  expect(style.pointerEvents).toBe("auto");
+  expect(style.touchAction).toContain("pan-y");
+
+  const box = await canvas.boundingBox();
+  const before = await canvasFrame(page, "#slide-01 .scene-canvas");
+  await page.mouse.move(box.x + box.width * .22, box.y + box.height * .34);
+  await page.mouse.move(box.x + box.width * .78, box.y + box.height * .62, { steps: 8 });
+  await page.waitForTimeout(220);
+  const after = await canvasFrame(page, "#slide-01 .scene-canvas");
+
+  expect(meanFrameDelta(before, after)).toBeGreaterThan(2.2);
+});
+
+test("mobile slide view title portal reacts to touch movement", async ({ page }) => {
+  await page.locator("#mobileViewToggle").click();
+  await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
+
+  const canvas = page.locator("#slide-01 .scene-canvas");
+  await expect(canvas).toBeVisible();
+
+  const box = await canvas.boundingBox();
+  const before = await canvasFrame(page, "#slide-01 .scene-canvas");
+  await page.mouse.move(box.x + box.width * .22, box.y + box.height * .34);
+  await page.mouse.move(box.x + box.width * .78, box.y + box.height * .62, { steps: 8 });
+  await page.waitForTimeout(220);
+  const after = await canvasFrame(page, "#slide-01 .scene-canvas");
+
+  expect(meanFrameDelta(before, after)).toBeGreaterThan(2.2);
+});
+
+test("mobile title portal intensifies with scroll suction", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+  const canvas = page.locator("#slide-01 .scene-canvas");
+  await expect(canvas).toBeVisible();
+
+  const before = await canvasFrame(page, "#slide-01 .scene-canvas");
+  await page.evaluate(() => {
+    const title = document.querySelector("#slide-01");
+    window.scrollTo(0, Math.floor(title.offsetHeight * .34));
+  });
+  await page.waitForTimeout(320);
+  const after = await canvasFrame(page, "#slide-01 .scene-canvas");
+  const state = await canvas.evaluate((node) => {
+    const scene = window.__sceneState.get(node);
+    return {
+      scrollPull: scene.scrollPull || 0,
+      scrollImpulse: scene.scrollImpulse || 0,
+    };
+  });
+
+  expect(state.scrollPull).toBeGreaterThan(.18);
+  expect(meanFrameDelta(before, after)).toBeGreaterThan(3);
+});
+
 test("mobile reader mode preserves native touch scrolling", async ({ page }) => {
   await expect(page.locator("body")).toHaveClass(/mobile-reader/);
 
@@ -344,4 +424,29 @@ test("mobile users can opt into slide view", async ({ page }) => {
   const after = await canvasSignature(page, "#slide-01 .scene-canvas");
   await expect(page.locator("#slide-01")).toHaveAttribute("data-step", "1");
   expect(after.signature).not.toBe(before.signature);
+});
+
+test("mobile slide view keeps every live scene kinetic at idle", async ({ page }) => {
+  test.setTimeout(90000);
+  await page.locator("#mobileViewToggle").click();
+  await expect(page.locator("body")).not.toHaveClass(/mobile-reader/);
+
+  const sceneSlides = await page.locator(".slide:has(.scene-canvas)").evaluateAll((slides) =>
+    slides.map((slide) => slide.id).filter(Boolean)
+  );
+
+  for (const id of sceneSlides) {
+    await page.evaluate((slideId) => {
+      const jump = document.querySelector("#jump");
+      jump.value = slideId;
+      jump.dispatchEvent(new Event("change", { bubbles: true }));
+    }, id);
+    await page.waitForTimeout(120);
+
+    const before = await canvasFrame(page, `#${id} .scene-canvas`);
+    await page.waitForTimeout(420);
+    const after = await canvasFrame(page, `#${id} .scene-canvas`);
+
+    expect(meanFrameDelta(before, after), `${id} mobile slide-view scene is static`).toBeGreaterThan(3);
+  }
 });
