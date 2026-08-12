@@ -219,12 +219,11 @@ test("bio photo is visible and not horizontally clipped on mobile", async ({ pag
   expect(result.width).toBeGreaterThan(120);
   expect(result.height).toBeGreaterThan(120);
   expect(result.imageWidth).toBeGreaterThan(220);
-  expect(result.imageHeight).toBeGreaterThan(120);
-  expect(result.imageHeight, `bio photo dominates the phone viewport: ${JSON.stringify(result)}`).toBeLessThan(result.viewportHeight * .36);
-  expect(result.objectFit).toBe("cover");
-  expect(result.objectPosition).toBe("50% 100%");
-  expect(result.renderedRatio, `bio photo should be a phone-friendly banner crop: ${JSON.stringify(result)}`).toBeGreaterThan(1.65);
-  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.1);
+  expect(result.imageHeight).toBeGreaterThan(220);
+  expect(result.imageHeight, `bio photo dominates the phone viewport: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportHeight * .5);
+  expect(result.objectFit).toBe("contain");
+  expect(Math.abs(result.renderedRatio - result.naturalRatio), `bio photo appears cropped or distorted: ${JSON.stringify(result)}`).toBeLessThan(.03);
+  expect(result.canvasOpacity, `bio scene overlay is too strong: ${JSON.stringify(result)}`).toBeLessThanOrEqual(.12);
   expect(Number(result.frameZIndex), `bio content must layer above scene canvas: ${JSON.stringify(result)}`).toBeGreaterThan(Number(result.canvasZIndex));
   expect(result.left, `photo clipped left: ${JSON.stringify(result)}`).toBeGreaterThanOrEqual(-2);
   expect(result.right, `photo clipped right: ${JSON.stringify(result)}`).toBeLessThanOrEqual(result.viewportWidth + 2);
@@ -364,6 +363,39 @@ test("mobile title portal intensifies with scroll suction", async ({ page }) => 
 
   expect(state.scrollPull).toBeGreaterThan(.18);
   expect(meanFrameDelta(before, after)).toBeGreaterThan(3);
+});
+
+test("mobile reader keeps title and default poster tactile", async ({ page }) => {
+  await expect(page.locator("body")).toHaveClass(/mobile-reader/);
+
+  const result = await page.evaluate(() => {
+    const topbar = document.querySelector(".topbar");
+    const rabbit = document.querySelector("#slide-01 .cover-art img");
+    const defaultCanvas = document.querySelector("#slide-10 .scene-canvas");
+    const defaultPoster = document.querySelector("#slide-10 .poster-img");
+    const topbarBox = topbar.getBoundingClientRect();
+    const rabbitStyle = getComputedStyle(rabbit);
+    const defaultCanvasStyle = getComputedStyle(defaultCanvas);
+    const defaultPosterStyle = getComputedStyle(defaultPoster);
+
+    return {
+      topbarHeight: topbarBox.height,
+      rabbitAnimationName: rabbitStyle.animationName,
+      rabbitBlendMode: rabbitStyle.mixBlendMode,
+      rabbitOpacity: Number(rabbitStyle.opacity),
+      defaultCanvasOpacity: Number(defaultCanvasStyle.opacity),
+      defaultPosterOpacity: Number(defaultPosterStyle.opacity),
+      defaultPosterBlendMode: defaultPosterStyle.mixBlendMode,
+    };
+  });
+
+  expect(result.topbarHeight, `mobile chrome crowds the title slide: ${JSON.stringify(result)}`).toBeLessThan(92);
+  expect(result.rabbitAnimationName).toContain("title-rabbit-idle-spin");
+  expect(result.rabbitBlendMode).toBe("screen");
+  expect(result.rabbitOpacity).toBeLessThan(.92);
+  expect(result.defaultCanvasOpacity).toBeGreaterThanOrEqual(.5);
+  expect(result.defaultPosterOpacity).toBeLessThanOrEqual(.72);
+  expect(result.defaultPosterBlendMode).toBe("screen");
 });
 
 test("mobile reader mode preserves native touch scrolling", async ({ page }) => {

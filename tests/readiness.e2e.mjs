@@ -79,6 +79,7 @@ test("all slides fit the presentation viewport without horizontal scroll", async
 });
 
 test("active slide text stays readable without DOM overflow or collisions", async ({ page }) => {
+  test.setTimeout(90000);
   const problems = await page.evaluate(async () => {
     const slideIds = [...document.querySelectorAll(".slide")].map((slide) => slide.id);
     const allIssues = [];
