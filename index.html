@@ -1527,9 +1527,9 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
   z-index: 2;
 }
 #slide-10.slide-live.slide-poster .poster-img {
-  opacity: 1;
-  mix-blend-mode: normal;
-  filter: saturate(1.22) contrast(1.18) brightness(1.08);
+  opacity: .92;
+  mix-blend-mode: screen;
+  filter: saturate(1.28) contrast(1.12) brightness(1.12);
 }
 #slide-16.slide-live .scene-canvas {
   z-index: 4;
@@ -1726,6 +1726,11 @@ p, li { font-size: clamp(.92rem, 1.2vw, 1.12rem); }
     margin: 0 auto;
     object-fit: contain;
     transform: none !important;
+  }
+  body.mobile-reader #slide-10.slide-live.slide-poster .poster-img {
+    opacity: .86;
+    mix-blend-mode: screen;
+    filter: saturate(1.24) contrast(1.08) brightness(1.16);
   }
   body.mobile-reader .bio-patch {
     display: none;
